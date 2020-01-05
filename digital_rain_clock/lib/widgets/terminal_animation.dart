@@ -2,60 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TerminalAnimation extends StatelessWidget {
-
   TerminalAnimation({
     Key key,
-    this.quickStart = false,
+    this.startCursorOn = false,
     @required this.text,
     @required this.textStyle,
     @required this.colors,
     @required this.controller,
   })  : startCursor = StepTween(
           begin: 0,
-          end: quickStart ? kQuickStartSteps : kStartSteps,
-        ).animate(
-          CurvedAnimation(
-            parent: controller,
-            curve: quickStart ? kQuickStartInterval : kStartInterval,
-          ),
-        ),
+          end: kStartSteps,
+        ).animate(CurvedAnimation(
+          parent: controller,
+          curve: kStartInterval,
+        )),
         charCount = StepTween(
           begin: 0,
           end: text.length,
-        ).animate(
-          CurvedAnimation(
-            parent: controller,
-            curve: quickStart ? kQuickTextInterval : kTextInterval,
-          ),
-        ),
+        ).animate(CurvedAnimation(
+          parent: controller,
+          curve: kTextInterval,
+        )),
         endCursor = StepTween(
           begin: 0,
-          end: quickStart ? kQuickEndSteps : kEndSteps,
-        ).animate(
-          CurvedAnimation(
-            parent: controller,
-            curve: quickStart ? kQuickEndInterval : kEndInterval,
-          ),
-        ),
+          end: kEndSteps,
+        ).animate(CurvedAnimation(
+          parent: controller,
+          curve: kEndInterval,
+        )),
         super(key: key);
 
-  static const kDuration = const Duration(seconds: 17);
-  static const kQuickDuration = const Duration(seconds: 11);
+  static const kDuration = const Duration(milliseconds: 5500);
+  static const kStartSteps = 3;
+  static const kEndSteps = 6;
 
-  static const kStartSteps = 16;
-  static const kQuickStartSteps = 4;
-  static const kEndSteps = 15;
-  static const kQuickEndSteps = 15;
+  static const kStartInterval = const Interval(0.0, 0.2727);
+  static const kTextInterval = const Interval(0.2727, 0.4545);
+  static const kEndInterval = const Interval(0.4545, 1.0);
 
-  static const kStartInterval = const Interval(0.0, 0.4706);
-  static const kTextInterval = const Interval(0.4706, 0.5588);
-  static const kEndInterval = const Interval(0.5588, 1.0);
-
-  static const kQuickStartInterval = const Interval(0.0, 0.1818);
-  static const kQuickTextInterval = const Interval(0.1818, 0.3182);
-  static const kQuickEndInterval = const Interval(0.3182, 1.0);
-
-  final bool quickStart;
+  final bool startCursorOn;
   final String text;
   final TextStyle textStyle;
   final Map colors;
@@ -75,7 +60,7 @@ class TerminalAnimation extends StatelessWidget {
 
   Widget _buildAnimation(BuildContext context, Widget child) {
     // cursor is a half space followed by a block
-    final cursor = _shouldShowCursor() ? '\u{2005}\u{2587}' : '';
+    final cursor = _showCursor() ? '\u{2005}\u{2587}' : '\u{2005}\u{0020}';
     final displayText = text.substring(0, charCount.value) + cursor;
     return Text(
       displayText,
@@ -85,9 +70,10 @@ class TerminalAnimation extends StatelessWidget {
     );
   }
 
-  bool _shouldShowCursor() {
+  bool _showCursor() {
     if (charCount.value == 0) {
-      return startCursor.value % 2 == 0;
+      int blinkValue = startCursor.value % 2;
+      return startCursorOn ? blinkValue == 0 : blinkValue != 0;
     } else if (charCount.value == text.length) {
       return endCursor.value % 2 == 0;
     }

@@ -46,7 +46,7 @@ class _CharStreamState extends State<CharStream>
     super.dispose();
   }
 
-  void _stream() async {
+  Future<void> _stream() async {
     final fontSize =
         _nextRandom(CharStream.minSize, CharStream.maxSize).toDouble();
     final scaleRatio = fontSize / CharStream.maxSize;

@@ -48,11 +48,17 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
   void _updateModel() {
     setState(() {
       _terminalText = _capitalize(widget.model.weatherString) +
-          " * ${widget.model.temperatureString}";
+          " ${_temperatureString(widget.model.temperature)}" +
+          "\u{2005}\u{21e7}${_temperatureString(widget.model.high)}" +
+          "\u{2005}\u{21e9}${_temperatureString(widget.model.low)}";
     });
   }
 
   String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
+  String _temperatureString(num temperature) {
+    return '${temperature.round()}°';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,10 +94,9 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
   }
 
   Widget _buildForeground(final Map colors) {
-    const kChildWidthFactor = 0.75;
     return Center(
       child: FractionallySizedBox(
-        widthFactor: kChildWidthFactor,
+        widthFactor: 0.75,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +105,6 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
             Time(model: widget.model, colors: colors),
             Terminal(
               text: _terminalText,
-              widthFactor: kChildWidthFactor,
               colors: colors,
             ),
           ],
