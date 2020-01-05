@@ -18,7 +18,7 @@ class _TimeState extends State<Time> {
   int _hour;
   int _minute;
   int _second;
-  String _semanticsValue;
+  String _semanticValue;
   Timer _timer;
 
   @override
@@ -39,7 +39,7 @@ class _TimeState extends State<Time> {
       _hour = widget.model.is24HourFormat ? time.hour : _24to12hour(time.hour);
       _minute = time.minute;
       _second = time.second;
-      _semanticsValue = widget.model.is24HourFormat
+      _semanticValue = widget.model.is24HourFormat
           ? DateFormat.Hms().format(time)
           : DateFormat.jms().format(time);
       _timer = Timer(
@@ -49,12 +49,11 @@ class _TimeState extends State<Time> {
     });
   }
 
-  // todo: semantics
   @override
   Widget build(BuildContext context) {
     return Semantics(
       label: 'digital clock',
-      value: _semanticsValue,
+      value: _semanticValue,
       container: true,
       excludeSemantics: true,
       child: Row(

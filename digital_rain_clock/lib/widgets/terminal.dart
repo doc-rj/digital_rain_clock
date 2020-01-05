@@ -64,7 +64,6 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     } else if (status == AnimationStatus.dismissed) {
       setState(() {
         _startOn = !_startOn;
-        //_index = _index == 0 ? 1 : 0;
         _index = _index == _displayText.length - 1 ? 0 : ++_index;
         _animationController.forward();
       });
@@ -104,33 +103,38 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     });
   }
 
-  // todo: semantics
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.expand(
-        height: _textStyle.fontSize * 1.2 + 6.0,
-      ),
-      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-      padding: EdgeInsets.only(left: 10.0, right: 10.0),
-      decoration: BoxDecoration(
-        color: widget.colors[ColorElement.crt_background].withOpacity(0.7),
-        borderRadius: BorderRadius.circular(4.0),
-        boxShadow: [
-          SolidBoxShadow(
-            blurRadius: 4,
-            color: widget.colors[ColorElement.shadow].withOpacity(0.8),
-            offset: Offset(0.5, 2),
-          ),
-        ],
-      ),
-      alignment: Alignment.bottomCenter,
-      child: TerminalAnimation(
-        startCursorOn: _startOn,
-        text: _displayText[_index],
-        textStyle: _textStyle,
-        colors: widget.colors,
-        controller: _animationController,
+    return Semantics(
+      label: 'date and weather',
+      value: _date + ' ${widget.text}',
+      container: true,
+      excludeSemantics: true,
+      child: Container(
+        constraints: BoxConstraints.expand(
+          height: _textStyle.fontSize * 1.2 + 6.0,
+        ),
+        margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+        padding: EdgeInsets.only(left: 10.0, right: 10.0),
+        decoration: BoxDecoration(
+          color: widget.colors[ColorElement.crt_background].withOpacity(0.7),
+          borderRadius: BorderRadius.circular(4.0),
+          boxShadow: [
+            SolidBoxShadow(
+              blurRadius: 4,
+              color: widget.colors[ColorElement.shadow].withOpacity(0.8),
+              offset: Offset(0.5, 2),
+            ),
+          ],
+        ),
+        alignment: Alignment.bottomCenter,
+        child: TerminalAnimation(
+          startCursorOn: _startOn,
+          text: _displayText[_index],
+          textStyle: _textStyle,
+          colors: widget.colors,
+          controller: _animationController,
+        ),
       ),
     );
   }
