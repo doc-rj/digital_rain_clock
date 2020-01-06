@@ -23,6 +23,7 @@ class DynamicDigit extends StatefulWidget {
 class _DynamicDigitState extends State<DynamicDigit>
     with TickerProviderStateMixin {
   AnimationController _animationController;
+  // todo: maybe custom staggered animation instead of timer with scale transition?
   Widget _digit;
   Timer _timer;
   int _periodsLeft;
@@ -30,24 +31,21 @@ class _DynamicDigitState extends State<DynamicDigit>
   @override
   void initState() {
     super.initState();
-
     _animationController = AnimationController(
-        vsync: this,
-        lowerBound: 0.2,
-        upperBound: 1.0,
-        duration: Duration(milliseconds: widget.period * widget.numPeriods));
-
+      vsync: this,
+      lowerBound: 0.2,
+      upperBound: 1.0,
+      duration: Duration(milliseconds: widget.period * widget.numPeriods),
+    );
     _animationController.forward();
-    _periodsLeft = widget.numPeriods;
-    _updateDigit();
+    _updatePeriodsLeft();
   }
 
   @override
   void didUpdateWidget(DynamicDigit oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.child.data != widget.child.data) {
-      _periodsLeft = widget.numPeriods;
-      _updateDigit();
+      _updatePeriodsLeft();
       _animationController.reset();
       _animationController.forward();
     }
@@ -60,11 +58,16 @@ class _DynamicDigitState extends State<DynamicDigit>
     super.dispose();
   }
 
+  void _updatePeriodsLeft() {
+    _periodsLeft = widget.numPeriods;
+    _updateDigit();
+  }
+
   void _updateDigit() {
     setState(() {
       if (_periodsLeft-- > 0) {
         _digit = Char(
-          fontSize: 100.0,
+          fontSize: 60.0,
           color: widget.colors[ColorElement.digit],
           colors: widget.colors,
         );

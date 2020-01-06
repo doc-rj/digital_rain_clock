@@ -49,8 +49,8 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
     setState(() {
       _terminalText = _capitalize(widget.model.weatherString) +
           " ${_temperatureString(widget.model.temperature)}" +
-          "\u{2005}\u{21e7}${_temperatureString(widget.model.high)}" +
-          "\u{2005}\u{21e9}${_temperatureString(widget.model.low)}";
+          "\u{2005}\u{25b2}${_temperatureString(widget.model.high)}" +
+          "\u{2005}\u{25bc}${_temperatureString(widget.model.low)}";
     });
   }
 

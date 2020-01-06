@@ -18,6 +18,7 @@ class Terminal extends StatefulWidget {
 
 class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   TextStyle _textStyle;
+  TextStyle _cursorStyle;
   AnimationController _animationController;
 
   Timer _timer;
@@ -30,7 +31,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _updateDate();
-    _updateTextStyle();
+    _updateTextStyles();
     _animationController = AnimationController(
       duration: TerminalAnimation.kDuration,
       vsync: this,
@@ -53,7 +54,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
       _updateDisplayText();
     }
     if (widget.colors != oldWidget.colors) {
-      _updateTextStyle();
+      _updateTextStyles();
     }
   }
 
@@ -91,7 +92,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     });
   }
 
-  void _updateTextStyle() {
+  void _updateTextStyles() {
     setState(() {
       _textStyle = TextStyle(
         fontFamily: 'CourierPrimeCodeItalic',
@@ -99,6 +100,13 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         height: 1.2,
         color: widget.colors[ColorElement.crt_text],
         shadows: [],
+      );
+      _cursorStyle = TextStyle(
+          fontFamily: 'FreeMono',
+          fontSize: 16.0,
+          height: 1.2,
+          color: widget.colors[ColorElement.crt_text],
+          shadows: [],
       );
     });
   }
@@ -132,7 +140,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
           startCursorOn: _startOn,
           text: _displayText[_index],
           textStyle: _textStyle,
-          colors: widget.colors,
+          cursorStyle: _cursorStyle,
           controller: _animationController,
         ),
       ),

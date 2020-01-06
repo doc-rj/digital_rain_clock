@@ -28,3 +28,6 @@ flutter:
     - family: CourierPrimeCodeItalic
       fonts:
         - asset: third_party/Courier_Prime_Code_Italic.ttf
+    - family: FreeMono
+      fonts:
+        - asset: third_party/FreeMono.ttf
