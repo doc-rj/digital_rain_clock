@@ -11,9 +11,8 @@ class CharStream extends StatefulWidget {
   final Map colors;
 
   static const minSize = 16;
-  static const maxSize = 18;
+  static const maxSize = 19;
   static const minTrailChars = 12;
-  static const maxTrailChars = 32;
 
   @override
   _CharStreamState createState() => _CharStreamState();
@@ -93,8 +92,8 @@ class _CharStreamState extends State<CharStream>
   }
 
   List<Flexible> _buildTrailChars(double fontSize) {
-    final numChars =
-        _nextRandom(CharStream.minTrailChars, CharStream.maxTrailChars);
+    final maxTrailChars = (widget.height / fontSize).ceil();
+    final numChars = _nextRandom(CharStream.minTrailChars, maxTrailChars);
     return List<Flexible>.generate(numChars, (int index) {
       final position = numChars - index;
       return Flexible(

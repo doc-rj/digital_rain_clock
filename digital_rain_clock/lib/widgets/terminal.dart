@@ -102,9 +102,9 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         shadows: [],
       );
       _cursorStyle = TextStyle(
-          fontFamily: 'FreeMono',
+          fontFamily: 'DejaVuSansMono',
           fontSize: 16.0,
-          height: 1.2,
+          height: 1.0,
           color: widget.colors[ColorElement.crt_text],
           shadows: [],
       );

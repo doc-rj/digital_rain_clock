@@ -69,7 +69,7 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
     final defaultStyle = TextStyle(
       color: colors[ColorElement.digit]
           .withOpacity(brightness == Brightness.light ? 0.7 : 0.9),
-      fontFamily: 'Stalker1',
+      fontFamily: 'OCRA',
       fontSize: MediaQuery.of(context).size.width / 6,
       shadows: [
         SolidShadow(
@@ -96,9 +96,9 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
   Widget _buildForeground(final Map colors) {
     return Center(
       child: FractionallySizedBox(
-        widthFactor: 0.75,
+        widthFactor: 0.85,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

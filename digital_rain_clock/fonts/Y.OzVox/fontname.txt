@@ -1,0 +1,51 @@
+﻿Font Name
+    YOz N F 90 bi
+        | | |  |
+        | | |  +-> (None): Regular, b:Bold, i:Italic, bi:Bold Italic
+        | | +-> 90: based on JIS X 0208:1990, 
+        | |     (None): based on JIS 0213:2004
+        | +-> F: fixed pitch, (None): proportional, 
+        |     P: proportional kana, 
+        |     M: aijlx for Math. (non italic), 
+        |     X: block letters, XM: X&M, XF: X&F
+        +-> A: antique kana, C: cute kana, E: educational kana, 
+            N: new kana, S: standard
+
+File Name
+    YOz [RB] [ACENS] [_FP] [M] [90] [i] .ttf
+         |      |      |    |   |    |
+         |      |      |    |   |    +-> Italic
+         |      |      |    |   +-> jis90
+         |      |      |    +-> aijlx for Math.
+         |      |      +-> proportional / Fixed / Proportional kana
+         |      +-> a kinf of kana
+         +-> Regular / Bold
+
+
+
+フォント名
+    YOzＮＦ90ｂｉ
+       │││ │
+       │││ └→ なし: 標準, b: 太字, i: 斜体, bi: 太斜体
+       ││└→ 90: JIS X 0208:1990 (90版), 
+       ││     なし: JIS X 0213:2004 (04版)
+       │└→ F: 等幅, なし: プロポーショナル, 
+       │     P: 仮名もプロポーショナル, 
+       │     M: aijlxが数学用 (イタリックでない), 
+       │     X: 英数字がブロック体, XM: X&M, XF: X&F
+       └→ A: あんちっく仮名, C: キュートかな, E: 学参仮名, 
+            N: 新かな, S: 標準かな
+
+ファイル名
+    YOz [RB] [ACENS] [_FP] [M] [90] [i] .ttf
+         │    │     │   │   │  │
+         │    │     │   │   │  └→ 斜体
+         │    │     │   │   └→ jis90 (90版)
+         │    │     │   └→ aijlxが数学用
+         │    │     └→ ﾌﾟﾛﾎﾟｰｼｮﾅﾙ / 等幅 / 仮名もﾌﾟﾛﾎﾟｰｼｮﾅﾙ
+         │    └→ 仮名の種類
+         └→ 標準 / 太字
+
+
+
+

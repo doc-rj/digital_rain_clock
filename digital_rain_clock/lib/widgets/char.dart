@@ -22,7 +22,7 @@ class Char extends StatelessWidget {
     return Text(
       charset[Random().nextInt(charset.length)],
       style: TextStyle(
-        fontFamily: 'DigitalRain',
+        fontFamily: 'YOzREFM',
         fontSize: fontSize,
         color: color.withOpacity(opacity),
         shadows: [

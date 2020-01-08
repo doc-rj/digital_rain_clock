@@ -79,12 +79,12 @@ class _TimeState extends State<Time> {
           ),
           Expanded(
             flex: 2,
-            child: Center(
-              child: Text(
-                ':',
-                style: TextStyle(
-                  fontSize: 50.0,
-                ),
+            child: Text(
+              ':',
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 44.0,
+                letterSpacing: 0.0,
               ),
             ),
           ),
@@ -108,12 +108,12 @@ class _TimeState extends State<Time> {
           ),
           Expanded(
             flex: 2,
-            child: Center(
-              child: Text(
-                ':',
-                style: TextStyle(
-                  fontSize: 50.0,
-                ),
+            child: Text(
+              ':',
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 44.0,
+                letterSpacing: 0.0,
               ),
             ),
           ),

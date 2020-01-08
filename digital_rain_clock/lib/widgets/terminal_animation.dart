@@ -31,7 +31,7 @@ class TerminalAnimation extends StatelessWidget {
           curve: kEndInterval,
         )),
         cursorOn = TextSpan(
-          text: '\u{2588}',
+          text: '\u{2587}',
           style: cursorStyle,
         ),
         cursorOff = TextSpan(

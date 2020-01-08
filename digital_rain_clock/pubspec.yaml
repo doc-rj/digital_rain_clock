@@ -19,15 +19,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: DigitalRain
+    - family: DejaVuSansMono
       fonts:
-        - asset: third_party/matrix_code_nfi.ttf
-    - family: Stalker1
+        - asset: fonts/DejaVuFonts/DejaVuSansMono.ttf
+    - family: OCRA
       fonts:
-        - asset: third_party/stalker1.ttf
+        - asset: fonts/MatthewSkala/OCRA.ttf
     - family: CourierPrimeCodeItalic
       fonts:
-        - asset: third_party/Courier_Prime_Code_Italic.ttf
-    - family: FreeMono
+        - asset: fonts/Quote-UnquoteApps/CourierPrimeCodeItalic.ttf
+    - family: YOzREFM
       fonts:
-        - asset: third_party/FreeMono.ttf
+        - asset: fonts/Y.OzVox/YOzREFM.ttf
