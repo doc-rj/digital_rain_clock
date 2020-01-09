@@ -15,12 +15,23 @@ class DigitalRainClock extends StatefulWidget {
   const DigitalRainClock({@required this.model});
   final ClockModel model;
 
+  static const ideograph = {
+    WeatherCondition.sunny: '\u{2600}',
+    WeatherCondition.cloudy: '\u{2601}',
+    WeatherCondition.foggy: '\u{2601}',
+    WeatherCondition.rainy: '\u{2602}',
+    WeatherCondition.thunderstorm: '\u{2602}',
+    WeatherCondition.snowy: '\u{2746}',
+    WeatherCondition.windy: '\u{2652}'
+  };
+
   @override
   _DigitalRainClockState createState() => _DigitalRainClockState();
 }
 
 class _DigitalRainClockState extends State<DigitalRainClock> {
-  String _terminalText;
+  String _ideograph;
+  String _message;
 
   @override
   void initState() {
@@ -47,7 +58,8 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
 
   void _updateModel() {
     setState(() {
-      _terminalText = _capitalize(widget.model.weatherString) +
+      _ideograph = DigitalRainClock.ideograph[widget.model.weatherCondition];
+      _message = _capitalize(widget.model.weatherString) +
           " ${_temperatureString(widget.model.temperature)}" +
           "\u{2005}\u{25b2}${_temperatureString(widget.model.high)}" +
           "\u{2005}\u{25bc}${_temperatureString(widget.model.low)}";
@@ -104,7 +116,8 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
           children: <Widget>[
             Time(model: widget.model, colors: colors),
             Terminal(
-              text: _terminalText,
+              ideograph: _ideograph,
+              text: _message,
               colors: colors,
             ),
           ],

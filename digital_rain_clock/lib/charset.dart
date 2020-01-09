@@ -55,7 +55,7 @@ const charset = [
   '\u{ff98}',
   '\u{ff99}',
   '\u{ff9a}',
-  '\u{ff9b}'
-      '\u{ff9c}',
+  '\u{ff9b}',
+  '\u{ff9c}',
   '\u{ff9d}',
 ];

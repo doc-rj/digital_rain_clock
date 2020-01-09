@@ -8,7 +8,8 @@ import '../solid_box_shadow.dart';
 import 'terminal_animation.dart';
 
 class Terminal extends StatefulWidget {
-  const Terminal({@required this.text, @required this.colors});
+  const Terminal({this.ideograph, @required this.text, @required this.colors});
+  final String ideograph;
   final String text;
   final Map colors;
 
@@ -17,6 +18,7 @@ class Terminal extends StatefulWidget {
 }
 
 class TerminalState extends State<Terminal> with TickerProviderStateMixin {
+  TextStyle _ideographStyle;
   TextStyle _textStyle;
   TextStyle _cursorStyle;
   AnimationController _animationController;
@@ -25,7 +27,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   String _date;
   bool _startOn = false;
   int _index = 0;
-  List _displayText = [''];
+  List _messages = [''];
 
   @override
   void initState() {
@@ -50,7 +52,8 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(Terminal oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text != oldWidget.text) {
+    if (widget.text != oldWidget.text ||
+        widget.ideograph != oldWidget.ideograph) {
       _updateDisplayText();
     }
     if (widget.colors != oldWidget.colors) {
@@ -65,7 +68,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     } else if (status == AnimationStatus.dismissed) {
       setState(() {
         _startOn = !_startOn;
-        _index = _index == _displayText.length - 1 ? 0 : ++_index;
+        _index = _index == _messages.length - 1 ? 0 : ++_index;
         _animationController.forward();
       });
     }
@@ -86,27 +89,34 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
 
   void _updateDisplayText() {
     setState(() {
-      _displayText.clear();
-      _displayText.add(_date);
-      _displayText.add(widget.text);
+      _messages.clear();
+      _messages.add(_date);
+      _messages.add(widget.text);
     });
   }
 
   void _updateTextStyles() {
     setState(() {
+      _ideographStyle = TextStyle(
+        fontFamily: 'YOzREFM',
+        fontSize: 18.0,
+        textBaseline: TextBaseline.ideographic,
+        color: widget.colors[ColorElement.crt_text],
+        shadows: [],
+      );
       _textStyle = TextStyle(
         fontFamily: 'CourierPrimeCodeItalic',
         fontSize: 16.0,
         height: 1.2,
         color: widget.colors[ColorElement.crt_text],
-        shadows: [],
+      shadows: [],
       );
       _cursorStyle = TextStyle(
-          fontFamily: 'DejaVuSansMono',
-          fontSize: 16.0,
-          height: 1.0,
-          color: widget.colors[ColorElement.crt_text],
-          shadows: [],
+        fontFamily: 'DejaVuSansMono',
+        fontSize: 16.0,
+        height: 1.0,
+        color: widget.colors[ColorElement.crt_text],
+        shadows: [],
       );
     });
   }
@@ -138,8 +148,10 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         alignment: Alignment.bottomCenter,
         child: TerminalAnimation(
           startCursorOn: _startOn,
-          text: _displayText[_index],
-          textStyle: _textStyle,
+          ideograph: _index > 0 ? widget.ideograph : null,
+          ideographStyle: _ideographStyle,
+          message: _messages[_index],
+          messageStyle: _textStyle,
           cursorStyle: _cursorStyle,
           controller: _animationController,
         ),
