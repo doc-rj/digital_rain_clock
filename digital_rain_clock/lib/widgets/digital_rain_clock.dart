@@ -85,9 +85,9 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
       fontSize: MediaQuery.of(context).size.width / 6,
       shadows: [
         SolidShadow(
-          blurRadius: 4,
+          blurRadius: 3,
           color: colors[ColorElement.shadow].withOpacity(0.8),
-          offset: Offset(4, 4),
+          offset: Offset(3, 3),
         ),
       ],
     );

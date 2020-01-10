@@ -7,8 +7,8 @@ enum ColorElement {
   lead_char,
   trail_char,
   char_shadow,
-  crt_background,
-  crt_text,
+  tty_background,
+  tty_text,
 }
 
 class ColorThemes {
@@ -19,8 +19,8 @@ class ColorThemes {
     ColorElement.lead_char: Colors.black,
     ColorElement.trail_char: Colors.black,
     ColorElement.char_shadow: Colors.white,
-    ColorElement.crt_background: Colors.black,
-    ColorElement.crt_text: Color(0xffa6ffa6),
+    ColorElement.tty_background: Colors.white,
+    ColorElement.tty_text: Colors.black,
   };
 
   static const darkTheme = {
@@ -30,7 +30,7 @@ class ColorThemes {
     ColorElement.lead_char: Colors.white,
     ColorElement.trail_char: Color(0xff00ff41),
     ColorElement.char_shadow: Colors.black,
-    ColorElement.crt_background: Colors.black,
-    ColorElement.crt_text: Colors.white,
+    ColorElement.tty_background: Colors.black,
+    ColorElement.tty_text: Colors.white,
   };
 }

@@ -142,7 +142,7 @@ class _CharStreamState extends State<CharStream>
       case 2:
         return 0.9;
       default:
-        return 0.5;
+        return 0.6;
     }
   }
 
