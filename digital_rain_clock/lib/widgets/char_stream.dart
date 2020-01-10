@@ -12,7 +12,6 @@ class CharStream extends StatefulWidget {
 
   static const minSize = 16;
   static const maxSize = 19;
-  static const minTrailChars = 12;
 
   @override
   _CharStreamState createState() => _CharStreamState();
@@ -25,7 +24,6 @@ class _CharStreamState extends State<CharStream>
   bool _streamed = false;
   List<Widget> _chars = <Widget>[];
   AnimationController _animationController;
-  Timer _timer;
 
   @override
   void initState() {
@@ -35,14 +33,20 @@ class _CharStreamState extends State<CharStream>
       lowerBound: -1.0,
       upperBound: 1.0,
     );
+    _animationController.addStatusListener(_onAnimationStatus);
     _stream();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onAnimationStatus(AnimationStatus status) async {
+    if (status == AnimationStatus.completed) {
+      _stream();
+    }
   }
 
   Future<void> _stream() async {
@@ -61,15 +65,11 @@ class _CharStreamState extends State<CharStream>
     }
     // random delay followed by stream
     Future.delayed(Duration(seconds: _nextRandom(1, 8)), () {
-      _streamed = true;
-      _animationController.duration = Duration(seconds: duration);
-      _animationController.reset();
-      _animationController.forward();
-      // todo: consider listening for status instead
-      _timer = Timer(
-        Duration(seconds: duration),
-        _stream,
-      );
+      if (mounted) {
+        _streamed = true;
+        _animationController.duration = Duration(seconds: duration);
+        _animationController.forward(from: -1.0);
+      }
     });
   }
 
@@ -93,7 +93,8 @@ class _CharStreamState extends State<CharStream>
 
   List<Flexible> _buildTrailChars(double fontSize) {
     final maxTrailChars = (widget.height / fontSize).ceil();
-    final numChars = _nextRandom(CharStream.minTrailChars, maxTrailChars);
+    final minTrailChars = (maxTrailChars / 1.5).ceil();
+    final numChars = _nextRandom(minTrailChars, maxTrailChars);
     return List<Flexible>.generate(numChars, (int index) {
       final position = numChars - index;
       return Flexible(

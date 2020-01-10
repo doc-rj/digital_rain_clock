@@ -16,7 +16,7 @@ class DigitalRainClock extends StatefulWidget {
   final ClockModel model;
 
   static const ideograph = {
-    WeatherCondition.sunny: '\u{2600}',
+    WeatherCondition.sunny: '\u{263c}',
     WeatherCondition.cloudy: '\u{2601}',
     WeatherCondition.foggy: '\u{2601}',
     WeatherCondition.rainy: '\u{2602}',
