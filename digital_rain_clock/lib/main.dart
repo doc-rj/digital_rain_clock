@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'widgets/digital_rain_clock.dart';
 
 void main() {
+  // todo: remove this?
   // A temporary measure until Platform supports web and TargetPlatform supports
   // macOS.
   if (!kIsWeb && Platform.isMacOS) {

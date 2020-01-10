@@ -35,7 +35,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     _updateDate();
     _updateTextStyles();
     _animationController = AnimationController(
-      duration: TerminalAnimation.kDuration,
+      duration: TerminalAnimation.kSuggestedDuration,
       vsync: this,
     );
     _animationController.addStatusListener(_onAnimationStatus);

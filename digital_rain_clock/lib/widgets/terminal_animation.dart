@@ -43,7 +43,9 @@ class TerminalAnimation extends StatelessWidget {
         ),
         super(key: key);
 
-  static const kDuration = const Duration(milliseconds: 5500);
+  /// the suggested duration provides a good speed for animating the messages,
+  /// enough time for reading them, and blinks the cursor at a standard rate
+  static const kSuggestedDuration = const Duration(milliseconds: 5500);
   static const kStartSteps = 3;
   static const kEndSteps = 6;
 
@@ -85,25 +87,24 @@ class TerminalAnimation extends StatelessWidget {
   }
 
   List<TextSpan> _buildTextSpans() {
-    final spans = List<TextSpan>(ideograph != null ? 3 : 2);
-    var spanIndex = 0;
+    final spans = List<TextSpan>();
     if (ideograph != null) {
-      spans[spanIndex++] = TextSpan(
+      spans.add(TextSpan(
         text: ideograph.substring(0, charCount.value == 0 ? 0 : 1),
         style: ideographStyle,
-      );
+      ));
     }
-    spans[spanIndex++] = TextSpan(
+    spans.add(TextSpan(
       text: _buildMessage(),
       style: messageStyle,
-    );
-    spans[spanIndex++] = _shouldShowCursor() ? cursorOn : cursorOff;
+    ));
+    spans.add(_shouldShowCursor() ? cursorOn : cursorOff);
     return spans;
   }
 
   String _buildMessage() {
-    final endIndex = max(0, charCount.value - (ideograph != null ? 1 : 0));
     final prefix = ideograph != null ? '\u{2005}' : '';
+    final endIndex = max(0, charCount.value - (ideograph != null ? 1 : 0));
     return prefix + message.substring(0, endIndex) + '\u{2005}';
   }
 

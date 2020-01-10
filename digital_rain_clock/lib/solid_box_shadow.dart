@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/*
+ * This class extends BoxShadow to use BlurStyle.solid, which provides a
+ * better look behind translucent shapes; Can remove this later if BoxShadow
+ * constructor takes a BlurStyle.
+ */
 class SolidBoxShadow extends BoxShadow {
   const SolidBoxShadow({
     Color color = const Color(0xff000000),
