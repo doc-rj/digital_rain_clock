@@ -4,15 +4,15 @@ import '../themes.dart';
 import 'char.dart';
 
 class DynamicDigit extends StatefulWidget {
-  const DynamicDigit({
+  const DynamicDigit(
+    this.digit, {
     Key key,
-    @required this.child,
     @required this.colors,
-    this.period = 200,
+    this.period = 150,
     this.numPeriods = 2,
   }) : super(key: key);
 
-  final Text child;
+  final int digit;
   final Map colors;
   final int period;
   final int numPeriods;
@@ -24,7 +24,7 @@ class DynamicDigit extends StatefulWidget {
 class _DynamicDigitState extends State<DynamicDigit>
     with TickerProviderStateMixin {
   AnimationController _animationController;
-  Widget _digit;
+  Widget _child;
   Timer _timer;
   int _periodsLeft;
 
@@ -44,7 +44,7 @@ class _DynamicDigitState extends State<DynamicDigit>
   @override
   void didUpdateWidget(DynamicDigit oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.child.data != widget.child.data) {
+    if (oldWidget.digit != widget.digit) {
       _updatePeriodsLeft();
       _animationController.forward(from: 0.2);
     }
@@ -65,7 +65,7 @@ class _DynamicDigitState extends State<DynamicDigit>
   void _updateDigit() {
     setState(() {
       if (_periodsLeft-- > 0) {
-        _digit = Char(
+        _child = Char(
           fontSize: 60.0,
           color: widget.colors[ColorElement.digit],
           opacity: 0.7,
@@ -76,7 +76,7 @@ class _DynamicDigitState extends State<DynamicDigit>
           _updateDigit,
         );
       } else {
-        _digit = widget.child;
+        _child = Text(widget.digit.toString());
       }
     });
   }
@@ -85,7 +85,7 @@ class _DynamicDigitState extends State<DynamicDigit>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _animationController,
-      child: _digit,
+      child: _child,
     );
   }
 }

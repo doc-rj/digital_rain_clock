@@ -3,6 +3,10 @@ import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dynamic_digit.dart';
+import 'animated_digit.dart';
+
+enum Unit { hours, minutes, seconds }
+enum Place { tens, ones }
 
 class Time extends StatefulWidget {
   const Time({Key key, @required this.model, @required this.colors})
@@ -63,19 +67,13 @@ class _TimeState extends State<Time> {
           Expanded(
             flex: 4,
             child: Center(
-              child: DynamicDigit(
-                child: Text((_hour ~/ 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_hour, Unit.hours, Place.tens),
             ),
           ),
           Expanded(
             flex: 4,
             child: Center(
-              child: DynamicDigit(
-                child: Text((_hour % 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_hour, Unit.hours, Place.ones),
             ),
           ),
           Expanded(
@@ -92,19 +90,13 @@ class _TimeState extends State<Time> {
           Expanded(
             flex: 4,
             child: Center(
-              child: DynamicDigit(
-                child: Text((_minute ~/ 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_minute, Unit.minutes, Place.tens),
             ),
           ),
           Expanded(
             flex: 4,
             child: Center(
-              child: DynamicDigit(
-                child: Text((_minute % 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_minute, Unit.minutes, Place.ones),
             ),
           ),
           Expanded(
@@ -121,30 +113,13 @@ class _TimeState extends State<Time> {
           Expanded(
             flex: 4,
             child: Center(
-              child: DynamicDigit(
-                child: Text((_second ~/ 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_second, Unit.seconds, Place.tens),
             ),
           ),
           Expanded(
             flex: 4,
             child: Center(
-              /* todo: remove
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeOut,
-                child: Text(
-                  (_second % 10).toString(),
-                  key: ValueKey<int>(_second),
-                ),
-              ),
-              */
-              child: DynamicDigit(
-                child: Text((_second % 10).toString()),
-                colors: widget.colors,
-              ),
+              child: _digit(_second, Unit.seconds, Place.ones),
             ),
           ),
           Expanded(
@@ -156,6 +131,34 @@ class _TimeState extends State<Time> {
         ],
       ),
     );
+  }
+
+  Widget _digit(int value, Unit unit, Place place) {
+    final digit = place == Place.tens ? value ~/ 10 : value % 10;
+    return _shouldDoDynamic(unit, place)
+        ? DynamicDigit(digit, colors: widget.colors)
+        : AnimatedDigit(digit);
+  }
+
+  bool _shouldDoDynamic(Unit unit, Place place) {
+    switch (unit) {
+      case Unit.hours:
+        if (place == Place.tens) {
+          return _hour % 12 == 0 && _minute == 0 && _second == 0;
+        }
+        // ones
+        return _minute == 0 && _second == 0;
+
+      case Unit.minutes:
+        if (place == Place.tens) {
+          return _minute % 10 == 0 && _second == 0;
+        }
+        // ones
+        return _second == 0;
+
+      case Unit.seconds:
+        return _second % 10 == 0;
+    }
   }
 
   /// slightly more efficient than DateFormat format with 'hh'
