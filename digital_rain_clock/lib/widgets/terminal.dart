@@ -8,7 +8,13 @@ import '../solid_box_shadow.dart';
 import 'terminal_animation.dart';
 
 class Terminal extends StatefulWidget {
-  const Terminal({this.ideograph, @required this.text, @required this.colors});
+  const Terminal({
+    Key key,
+    this.ideograph,
+    @required this.text,
+    @required this.colors
+  }) : super(key: key);
+
   final String ideograph;
   final String text;
   final Map colors;
@@ -52,8 +58,8 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(Terminal oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text != oldWidget.text ||
-        widget.ideograph != oldWidget.ideograph) {
+    if (widget.ideograph != oldWidget.ideograph ||
+        widget.text != oldWidget.text) {
       _updateDisplayText();
     }
     if (widget.colors != oldWidget.colors) {

@@ -5,11 +5,12 @@ import 'char.dart';
 
 class DynamicDigit extends StatefulWidget {
   const DynamicDigit({
+    Key key,
     @required this.child,
     @required this.colors,
     this.period = 200,
     this.numPeriods = 2,
-  });
+  }) : super(key: key);
 
   final Text child;
   final Map colors;
@@ -23,7 +24,6 @@ class DynamicDigit extends StatefulWidget {
 class _DynamicDigitState extends State<DynamicDigit>
     with TickerProviderStateMixin {
   AnimationController _animationController;
-  // todo: maybe custom staggered animation instead of timer with scale transition?
   Widget _digit;
   Timer _timer;
   int _periodsLeft;
@@ -46,8 +46,7 @@ class _DynamicDigitState extends State<DynamicDigit>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.child.data != widget.child.data) {
       _updatePeriodsLeft();
-      _animationController.reset();
-      _animationController.forward();
+      _animationController.forward(from: 0.2);
     }
   }
 
@@ -69,6 +68,7 @@ class _DynamicDigitState extends State<DynamicDigit>
         _digit = Char(
           fontSize: 60.0,
           color: widget.colors[ColorElement.digit],
+          opacity: 0.7,
           colors: widget.colors,
         );
         _timer = Timer(

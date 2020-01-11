@@ -4,7 +4,8 @@ import 'char_stream.dart';
 //import 'text_stream.dart';
 
 class DigitalRain extends StatelessWidget {
-  const DigitalRain({@required this.model, @required this.colors});
+  const DigitalRain({Key key, @required this.model, @required this.colors})
+      : super(key: key);
   final ClockModel model;
   final Map colors;
 

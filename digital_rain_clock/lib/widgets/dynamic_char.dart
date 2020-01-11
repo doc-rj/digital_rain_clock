@@ -4,12 +4,13 @@ import 'char.dart';
 
 class DynamicChar extends StatefulWidget {
   const DynamicChar({
+    Key key,
     @required this.fontSize,
     @required this.color,
     @required this.colors,
     this.opacity = 1.0,
     this.period = 1000
-  });
+  }) : super(key: key);
 
   final double fontSize;
   final Color color;

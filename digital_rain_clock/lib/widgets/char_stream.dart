@@ -6,7 +6,8 @@ import 'dynamic_char.dart';
 import 'char.dart';
 
 class CharStream extends StatefulWidget {
-  const CharStream({@required this.height, @required this.colors});
+  const CharStream({Key key, @required this.height, @required this.colors})
+      : super(key: key);
   final double height;
   final Map colors;
 

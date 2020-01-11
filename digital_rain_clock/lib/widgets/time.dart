@@ -5,7 +5,8 @@ import 'package:intl/intl.dart';
 import 'dynamic_digit.dart';
 
 class Time extends StatefulWidget {
-  const Time({@required this.model, @required this.colors});
+  const Time({Key key, @required this.model, @required this.colors})
+      : super(key: key);
 
   final ClockModel model;
   final Map colors;
@@ -129,6 +130,17 @@ class _TimeState extends State<Time> {
           Expanded(
             flex: 4,
             child: Center(
+              /* todo: remove
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeOut,
+                child: Text(
+                  (_second % 10).toString(),
+                  key: ValueKey<int>(_second),
+                ),
+              ),
+              */
               child: DynamicDigit(
                 child: Text((_second % 10).toString()),
                 colors: widget.colors,
