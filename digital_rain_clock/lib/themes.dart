@@ -13,13 +13,13 @@ enum ColorElement {
 
 class ColorThemes {
   static const lightTheme = {
-    ColorElement.background: Colors.white,
+    ColorElement.background: Color(0xfff8f8f8),
     ColorElement.digit: Colors.black,
     ColorElement.shadow: Color(0xff009a22),
     ColorElement.lead_char: Colors.black,
     ColorElement.trail_char: Colors.black,
-    ColorElement.char_shadow: Colors.white,
-    ColorElement.tty_background: Colors.white,
+    ColorElement.char_shadow: Color(0xfff8f8f8),
+    ColorElement.tty_background: Color(0xfffcfcfc),
     ColorElement.tty_text: Colors.black,
   };
 

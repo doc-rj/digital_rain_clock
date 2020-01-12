@@ -108,7 +108,7 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
   Widget _buildForeground(final Map colors) {
     return Center(
       child: FractionallySizedBox(
-        widthFactor: 0.85,
+        widthFactor: 0.9,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
