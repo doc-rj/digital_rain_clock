@@ -8,12 +8,12 @@ import '../solid_box_shadow.dart';
 import 'terminal_animation.dart';
 
 class Terminal extends StatefulWidget {
-  const Terminal({
-    Key key,
-    this.ideograph,
-    @required this.text,
-    @required this.colors
-  }) : super(key: key);
+  const Terminal(
+      {Key key,
+      this.ideograph,
+      @required this.text,
+      @required this.colors})
+      : super(key: key);
 
   final String ideograph;
   final String text;
@@ -129,7 +129,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final opacity = widget.colors == ColorThemes.lightTheme ? 0.96 : 0.7;
+    final opacity = widget.colors == ColorThemes.light ? 0.94 : 0.7;
     return Semantics(
       label: 'date and weather',
       value: _date + ' ${widget.text}',

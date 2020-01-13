@@ -1,18 +1,32 @@
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_clock_helper/model.dart';
+
 import '../themes.dart';
 import 'dynamic_char.dart';
 import 'char.dart';
 
 class CharStream extends StatefulWidget {
-  const CharStream({Key key, @required this.height, @required this.colors})
-      : super(key: key);
+  const CharStream({
+    Key key,
+    @required this.height,
+    @required this.model,
+    @required this.colors,
+  }) : super(key: key);
+
   final double height;
+  final ClockModel model;
   final Map colors;
 
-  static const minSize = 16;
-  static const maxSize = 19;
+  static const kMinSize = 16;
+  static const kMaxSize = 19;
+  static const kScaleMultiplier = 1 / kMaxSize;
+
+  static const kMinDuration = 5;
+  static const kMaxDuration = 10;
+  static const kMinDurationFast = 3;
+  static const kMaxDurationFast = 6;
 
   @override
   _CharStreamState createState() => _CharStreamState();
@@ -22,6 +36,7 @@ class _CharStreamState extends State<CharStream>
     with SingleTickerProviderStateMixin {
   final _random = Random();
 
+  bool _fast = false;
   bool _streamed = false;
   List<Widget> _chars = <Widget>[];
   AnimationController _animationController;
@@ -29,6 +44,8 @@ class _CharStreamState extends State<CharStream>
   @override
   void initState() {
     super.initState();
+    _updateConditions();
+    widget.model.addListener(_onModelChanged);
     _animationController = AnimationController(
       vsync: this,
       lowerBound: -1.0,
@@ -39,9 +56,28 @@ class _CharStreamState extends State<CharStream>
   }
 
   @override
+  void didUpdateWidget(CharStream oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.model != oldWidget.model) {
+      oldWidget.model.removeListener(_onModelChanged);
+      widget.model.addListener(_onModelChanged);
+    }
+  }
+
+  @override
   void dispose() {
     _animationController.dispose();
+    widget.model.removeListener(_onModelChanged);
     super.dispose();
+  }
+
+  void _onModelChanged() {
+    _updateConditions();
+  }
+
+  void _updateConditions() {
+    // no setState() here, as the next stream will catch up
+    _fast = widget.model.weatherCondition == WeatherCondition.thunderstorm;
   }
 
   Future<void> _onAnimationStatus(AnimationStatus status) async {
@@ -52,9 +88,7 @@ class _CharStreamState extends State<CharStream>
 
   Future<void> _stream() async {
     final fontSize =
-        _nextRandom(CharStream.minSize, CharStream.maxSize).toDouble();
-    final scaleRatio = fontSize / CharStream.maxSize;
-    final duration = (_nextRandom(5, 7) / scaleRatio).floor();
+        _nextRandom(CharStream.kMinSize, CharStream.kMaxSize).toDouble();
     // eager build before delay
     _chars = <Widget>[
       ..._buildTrailChars(fontSize),
@@ -68,11 +102,22 @@ class _CharStreamState extends State<CharStream>
     Future.delayed(Duration(seconds: _nextRandom(1, 8)), () {
       if (mounted) {
         _streamed = true;
-        _animationController.duration = Duration(seconds: duration);
+        _animationController.duration = Duration(seconds: _duration(fontSize));
         _animationController.forward(from: -1.0);
       }
     });
   }
+
+  int _duration(double fontSize) {
+    final scaleRatio = fontSize * CharStream.kScaleMultiplier;
+    return _nextRandom(minDuration, maxDuration) ~/ scaleRatio;
+  }
+
+  int get minDuration =>
+      _fast ? CharStream.kMinDurationFast : CharStream.kMinDuration;
+
+  int get maxDuration =>
+      _fast ? CharStream.kMaxDurationFast : CharStream.kMaxDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +139,7 @@ class _CharStreamState extends State<CharStream>
 
   List<Flexible> _buildTrailChars(double fontSize) {
     final maxTrailChars = (widget.height / fontSize).ceil();
-    final minTrailChars = (maxTrailChars / 1.5).ceil();
+    final minTrailChars = (maxTrailChars * 0.66).ceil();
     final numChars = _nextRandom(minTrailChars, maxTrailChars);
     return List<Flexible>.generate(numChars, (int index) {
       final position = numChars - index;

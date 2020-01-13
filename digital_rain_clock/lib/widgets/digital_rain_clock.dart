@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 
 import '../themes.dart';
 import '../solid_shadow.dart';
-import 'terminal.dart';
+import 'background.dart';
 import 'digital_rain.dart';
 import 'time.dart';
+import 'terminal.dart';
 
 class DigitalRainClock extends StatefulWidget {
   const DigitalRainClock({Key key, @required this.model}) : super(key: key);
@@ -29,34 +30,39 @@ class DigitalRainClock extends StatefulWidget {
   _DigitalRainClockState createState() => _DigitalRainClockState();
 }
 
-class _DigitalRainClockState extends State<DigitalRainClock> {
+class _DigitalRainClockState extends State<DigitalRainClock>
+    with SingleTickerProviderStateMixin {
   String _ideograph;
   String _message;
 
   @override
   void initState() {
     super.initState();
-    widget.model.addListener(_updateModel);
-    _updateModel();
+    _updateMessage();
+    widget.model.addListener(_onModelChanged);
   }
 
   @override
   void didUpdateWidget(DigitalRainClock oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.model != oldWidget.model) {
-      oldWidget.model.removeListener(_updateModel);
-      widget.model.addListener(_updateModel);
+      oldWidget.model.removeListener(_onModelChanged);
+      widget.model.addListener(_onModelChanged);
     }
   }
 
   @override
   void dispose() {
-    widget.model.removeListener(_updateModel);
+    widget.model.removeListener(_onModelChanged);
     widget.model.dispose();
     super.dispose();
   }
 
-  void _updateModel() {
+  void _onModelChanged() {
+    _updateMessage();
+  }
+
+  void _updateMessage() {
     setState(() {
       _ideograph = DigitalRainClock.ideograph[widget.model.weatherCondition];
       _message = _capitalize(widget.model.weatherString) +
@@ -75,12 +81,11 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
-    final colors = brightness == Brightness.light
-        ? ColorThemes.lightTheme
-        : ColorThemes.darkTheme;
+    Map colors =
+        brightness == Brightness.light ? ColorThemes.light : ColorThemes.dark;
     final defaultStyle = TextStyle(
       color: colors[ColorElement.digit]
-          .withOpacity(brightness == Brightness.light ? 0.7 : 0.9),
+          .withOpacity(colors == ColorThemes.light ? 0.7 : 0.9),
       fontFamily: 'OCRA',
       fontSize: MediaQuery.of(context).size.width / 6,
       shadows: [
@@ -91,16 +96,14 @@ class _DigitalRainClockState extends State<DigitalRainClock> {
         ),
       ],
     );
-    return Container(
-      color: colors[ColorElement.background],
-      child: DefaultTextStyle(
-        style: defaultStyle,
-        child: Stack(
-          children: <Widget>[
-            DigitalRain(model: widget.model, colors: colors),
-            _buildForeground(colors),
-          ],
-        ),
+    return DefaultTextStyle(
+      style: defaultStyle,
+      child: Stack(
+        children: <Widget>[
+          Background(model: widget.model, colors: colors),
+          DigitalRain(model: widget.model, colors: colors),
+          _buildForeground(colors),
+        ],
       ),
     );
   }

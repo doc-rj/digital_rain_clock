@@ -1,7 +1,6 @@
-import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_clock_helper/model.dart';
 import 'char_stream.dart';
-//import 'text_stream.dart';
 
 class DigitalRain extends StatelessWidget {
   const DigitalRain({Key key, @required this.model, @required this.colors})
@@ -17,7 +16,6 @@ class DigitalRain extends StatelessWidget {
           return Row(
             children: <Widget>[
               ..._buildRain(context, constraints),
-              //_buildText(context, model.weatherString),
             ],
           );
         },
@@ -27,16 +25,12 @@ class DigitalRain extends StatelessWidget {
 
   List<Widget> _buildRain(BuildContext context, BoxConstraints constraints) {
     // fill the width per parent constraints
-    final streamWidth = CharStream.maxSize / 1.5;
-    final numStreams = (constraints.maxWidth / streamWidth).floor();
+    final streamWidth = CharStream.kMaxSize / 1.5;
+    final numStreams = constraints.maxWidth ~/ streamWidth;
     return List<Expanded>.generate(
         numStreams,
         (_) => Expanded(
-            child: CharStream(height: constraints.maxHeight, colors: colors)));
+            child: CharStream(
+                height: constraints.maxHeight, model: model, colors: colors)));
   }
-
-  // todo: remove
-  //Widget _buildText(BuildContext context, String text) {
-  //  return Expanded(child: TextStream(text: text, colors: colors));
-  //}
 }
