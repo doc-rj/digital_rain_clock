@@ -13,24 +13,43 @@ class DigitalRain extends StatelessWidget {
     return ExcludeSemantics(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return Row(
-            children: <Widget>[
-              ..._buildRain(context, constraints),
-            ],
-          );
+          return _buildContainer(context, constraints);
         },
       ),
     );
   }
 
+  Widget _buildContainer(BuildContext context, BoxConstraints constraints) {
+    return RotatedBox(
+      quarterTurns: model.weatherCondition == WeatherCondition.windy ? 3 : 0,
+      child: Row(
+        children: <Widget>[
+          ..._buildRain(context, constraints),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _buildRain(BuildContext context, BoxConstraints constraints) {
-    // fill the width per parent constraints
+    // fill the space per parent constraints
     final streamWidth = CharStream.kMaxSize / 1.5;
-    final numStreams = constraints.maxWidth ~/ streamWidth;
+    final mainAxisSize = model.weatherCondition == WeatherCondition.windy
+        ? constraints.maxWidth
+        : constraints.maxHeight;
+    final crossAxisSize = model.weatherCondition == WeatherCondition.windy
+        ? constraints.maxHeight
+        : constraints.maxWidth;
+    final numStreams = crossAxisSize ~/ streamWidth;
     return List<Expanded>.generate(
-        numStreams,
-        (_) => Expanded(
-            child: CharStream(
-                height: constraints.maxHeight, model: model, colors: colors)));
+      numStreams,
+      (_) => Expanded(
+        child: CharStream(
+            axisSize: mainAxisSize,
+            height: constraints.maxHeight,
+            model: model,
+            colors: colors,
+        ),
+      ),
+    );
   }
 }

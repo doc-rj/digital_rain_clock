@@ -10,11 +10,13 @@ import 'char.dart';
 class CharStream extends StatefulWidget {
   const CharStream({
     Key key,
+    @required this.axisSize,
     @required this.height,
     @required this.model,
     @required this.colors,
   }) : super(key: key);
 
+  final double axisSize;
   final double height;
   final ClockModel model;
   final Map colors;
@@ -27,6 +29,22 @@ class CharStream extends StatefulWidget {
   static const kMaxDuration = 10;
   static const kMinDurationFast = 3;
   static const kMaxDurationFast = 6;
+
+  static const kLeadCharOpacity = {
+    0: 0.6,
+    1: 0.7,
+    2: 0.9,
+  };
+
+  static const kTrailCharOpacity = {
+    0: 0.1,
+    1: 0.2,
+    2: 0.2,
+    3: 0.3,
+    4: 0.3,
+    5: 0.4,
+    6: 0.4,
+  };
 
   @override
   _CharStreamState createState() => _CharStreamState();
@@ -94,7 +112,7 @@ class _CharStreamState extends State<CharStream>
       ..._buildTrailChars(fontSize),
       ..._buildLeadChars(fontSize),
     ];
-    // initial delay for dramatic effect and to minimize jank
+    // one-time delay for dramatic effect, and to minimize loading jank
     if (!_streamed) {
       await Future.delayed(Duration(seconds: 7));
     }
@@ -125,9 +143,8 @@ class _CharStreamState extends State<CharStream>
       animation: _animationController,
       // not providing child, because we want to use rebuilt _chars
       builder: (BuildContext context, Widget child) {
-        return Transform(
-          transform: Matrix4.identity()
-            ..translate(0.0, _animationController.value * widget.height, 0.0),
+        return Transform.translate(
+          offset: Offset(0, _animationController.value * widget.axisSize),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: _chars,
@@ -138,26 +155,29 @@ class _CharStreamState extends State<CharStream>
   }
 
   List<Flexible> _buildTrailChars(double fontSize) {
+    // using parent height constraint here so chars don't become temporarily
+    // distorted when switching from windy to other conditions
     final maxTrailChars = (widget.height / fontSize).ceil();
     final minTrailChars = (maxTrailChars * 0.66).ceil();
     final numChars = _nextRandom(minTrailChars, maxTrailChars);
     return List<Flexible>.generate(numChars, (int index) {
       final position = numChars - index;
       return Flexible(
-          child: position % 5 == 0
-              ? DynamicChar(
-                  fontSize: fontSize,
-                  color: widget.colors[ColorElement.trail_char],
-                  colors: widget.colors,
-                  opacity: _computeTrailOpacity(index),
-                  period: 1000,
-                )
-              : Char(
-                  fontSize: fontSize,
-                  color: widget.colors[ColorElement.trail_char],
-                  colors: widget.colors,
-                  opacity: _computeTrailOpacity(index),
-                ));
+        child: position % 5 == 0
+            ? DynamicChar(
+                fontSize: fontSize,
+                color: widget.colors[ColorElement.trail_char],
+                colors: widget.colors,
+                opacity: CharStream.kTrailCharOpacity[index] ?? 0.6,
+                period: 1000,
+              )
+            : Char(
+                fontSize: fontSize,
+                color: widget.colors[ColorElement.trail_char],
+                colors: widget.colors,
+                opacity: CharStream.kTrailCharOpacity[index] ?? 0.6,
+              ),
+      );
     });
   }
 
@@ -175,40 +195,9 @@ class _CharStreamState extends State<CharStream>
       fontSize: fontSize,
       color: widget.colors[ColorElement.lead_char],
       colors: widget.colors,
-      opacity: _computeLeadOpacity(index),
+      opacity: CharStream.kLeadCharOpacity[index] ?? 0.6,
       period: position == 1 ? 300 : 1000,
     ));
-  }
-
-  double _computeLeadOpacity(int index) {
-    switch (index) {
-      case 0:
-        return 0.6;
-      case 1:
-        return 0.7;
-      case 2:
-        return 0.9;
-      default:
-        return 0.6;
-    }
-  }
-
-  double _computeTrailOpacity(int index) {
-    switch (index) {
-      case 0:
-        return 0.1;
-      case 1:
-      case 2:
-        return 0.2;
-      case 3:
-      case 4:
-        return 0.3;
-      case 5:
-      case 6:
-        return 0.4;
-      default:
-        return 0.6;
-    }
   }
 
   int _nextRandom(int min, int max) => min + _random.nextInt(max - min);

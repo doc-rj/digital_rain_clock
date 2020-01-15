@@ -16,6 +16,7 @@ enum ColorElement {
   cloudy,
   stormy,
   snowy,
+  windy,
 }
 
 class ColorThemes {
@@ -34,6 +35,7 @@ class ColorThemes {
     ColorElement.cloudy: Color(0xfff2f3f4),
     ColorElement.stormy: Color(0xffe5e4e2),
     ColorElement.snowy: Colors.white,
+    ColorElement.windy: Color(0xfff2f2fc),
   };
 
   static const dark = {
@@ -55,7 +57,7 @@ class ColorThemes {
     WeatherCondition.foggy: ColorElement.stormy,
     WeatherCondition.thunderstorm: ColorElement.stormy,
     WeatherCondition.snowy: ColorElement.snowy,
-    WeatherCondition.windy: ColorElement.background,
+    WeatherCondition.windy: ColorElement.windy,
   };
 
   static Color background(Map colors, WeatherCondition condition,
