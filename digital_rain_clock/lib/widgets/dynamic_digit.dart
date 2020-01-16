@@ -1,21 +1,30 @@
-import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import '../themes.dart';
-import 'char.dart';
 
 class DynamicDigit extends StatefulWidget {
   const DynamicDigit(
     this.digit, {
     Key key,
+    this.duration = 500,
     @required this.colors,
-    this.period = 150,
-    this.numPeriods = 2,
   }) : super(key: key);
 
   final int digit;
   final Map colors;
-  final int period;
-  final int numPeriods;
+  final int duration;
+
+  static final scaleTween = Tween<double>(
+    begin: 0.2,
+    end: 0.9,
+  );
+  static final slideTween = Tween<Offset>(
+    begin: const Offset(0.0, -0.8),
+    end: const Offset(0.0, -0.06),
+  );
+  static final rotateTween = Tween<double>(
+    begin: 1.0,
+    end: 0.0,
+  );
 
   @override
   _DynamicDigitState createState() => _DynamicDigitState();
@@ -24,68 +33,58 @@ class DynamicDigit extends StatefulWidget {
 class _DynamicDigitState extends State<DynamicDigit>
     with TickerProviderStateMixin {
   AnimationController _animationController;
-  Widget _child;
-  Timer _timer;
-  int _periodsLeft;
+  Animation<Offset> _slideAnimation;
+  Animation<double> _scaleAnimation;
+  Animation<double> _rotateAnimation;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      lowerBound: 0.2,
-      upperBound: 1.0,
-      duration: Duration(milliseconds: widget.period * widget.numPeriods),
+      duration: Duration(milliseconds: widget.duration),
     );
+
+    _slideAnimation = DynamicDigit.slideTween.animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.linearToEaseOut));
+    _scaleAnimation = DynamicDigit.scaleTween.animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeInCubic));
+    _rotateAnimation = DynamicDigit.rotateTween.animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeInCubic));
     _animationController.forward();
-    _updatePeriodsLeft();
   }
 
   @override
   void didUpdateWidget(DynamicDigit oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.digit != widget.digit) {
-      _updatePeriodsLeft();
-      _animationController.forward(from: 0.2);
+      _animationController.forward();
     }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _updatePeriodsLeft() {
-    _periodsLeft = widget.numPeriods;
-    _updateDigit();
-  }
-
-  void _updateDigit() {
-    setState(() {
-      if (_periodsLeft-- > 0) {
-        _child = Char(
-          fontSize: 60.0,
-          color: widget.colors[ColorElement.digit],
-          opacity: 0.7,
-          colors: widget.colors,
-        );
-        _timer = Timer(
-          Duration(milliseconds: widget.period),
-          _updateDigit,
-        );
-      } else {
-        _child = Text(widget.digit.toString());
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _animationController,
-      child: _child,
+    return SlideTransition(
+      position: _slideAnimation,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (BuildContext context, Widget child) {
+          return Transform(
+            transform: Matrix4.identity()
+              ..setRotationX(-1.5 * pi)
+              ..rotateX(_rotateAnimation.value * 0.75 * pi)
+              ..scale(_scaleAnimation.value, _scaleAnimation.value),
+            alignment: FractionalOffset.center,
+            child: Text(widget.digit.toString()),
+          );
+        },
+      ),
     );
   }
 }

@@ -31,8 +31,9 @@ class DigitalRain extends StatelessWidget {
   }
 
   List<Widget> _buildRain(BuildContext context, BoxConstraints constraints) {
-    // fill the space per parent constraints
-    final streamWidth = CharStream.kMaxSize / 1.5;
+    // fill the space per parent constraints, but limit the number of streams
+    // due to performance considerations
+    final streamWidth = CharStream.kMaxSize * 2;
     final mainAxisSize = model.weatherCondition == WeatherCondition.windy
         ? constraints.maxWidth
         : constraints.maxHeight;

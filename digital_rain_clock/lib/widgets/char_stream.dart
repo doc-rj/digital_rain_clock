@@ -56,6 +56,7 @@ class _CharStreamState extends State<CharStream>
 
   bool _fast = false;
   bool _streamed = false;
+  Alignment _alignment = Alignment.center;
   List<Widget> _chars = <Widget>[];
   AnimationController _animationController;
 
@@ -114,12 +115,13 @@ class _CharStreamState extends State<CharStream>
     ];
     // one-time delay for dramatic effect, and to minimize loading jank
     if (!_streamed) {
-      await Future.delayed(Duration(seconds: 7));
+      await Future.delayed(Duration(seconds: 5));
     }
     // random delay followed by stream
     Future.delayed(Duration(seconds: _nextRandom(1, 8)), () {
       if (mounted) {
         _streamed = true;
+        _alignment = Alignment(_nextRandom(-1, 1).toDouble(), 0.0);
         _animationController.duration = Duration(seconds: _duration(fontSize));
         _animationController.forward(from: -1.0);
       }
@@ -139,18 +141,21 @@ class _CharStreamState extends State<CharStream>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      // not providing child, because we want to use rebuilt _chars
-      builder: (BuildContext context, Widget child) {
-        return Transform.translate(
-          offset: Offset(0, _animationController.value * widget.axisSize),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: _chars,
-          ),
-        );
-      },
+    return Container(
+      alignment: _alignment,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        // not providing child, because we want to use rebuilt _chars
+        builder: (BuildContext context, Widget child) {
+          return Transform.translate(
+            offset: Offset(0, _animationController.value * widget.axisSize),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: _chars,
+            ),
+          );
+        },
+      ),
     );
   }
 

@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dynamic_digit.dart';
-import 'animated_digit.dart';
+import 'digit_switcher.dart';
 
 enum Unit { hours, minutes, seconds }
 enum Place { tens, ones }
@@ -23,8 +24,13 @@ class _TimeState extends State<Time> {
   int _hour;
   int _minute;
   int _second;
+
+  DateTime _nextTime;
+  bool _dynamic = false;
+
   String _semanticValue;
   Timer _timer;
+  int _duration;
 
   @override
   void initState() {
@@ -47,8 +53,12 @@ class _TimeState extends State<Time> {
       _semanticValue = widget.model.is24HourFormat
           ? DateFormat.Hms().format(time)
           : DateFormat.jms().format(time);
+      _nextTime = time.add(Duration(seconds: 1));
+      _dynamic = _nextTime.minute % 15 == 0;
+      final millisLeft = 1000 - time.millisecond;
+      _duration = _dynamic ? max(500, millisLeft) : millisLeft;
       _timer = Timer(
-        Duration(seconds: 1) - Duration(milliseconds: time.millisecond),
+        Duration(milliseconds: _duration),
         _updateTime,
       );
     });
@@ -135,29 +145,20 @@ class _TimeState extends State<Time> {
 
   Widget _digit(int value, Unit unit, Place place) {
     final digit = place == Place.tens ? value ~/ 10 : value % 10;
-    return _shouldDoDynamic(unit, place)
-        ? DynamicDigit(digit, colors: widget.colors)
-        : AnimatedDigit(digit);
+    return _dynamic && _shouldDoDynamic(_nextTime, unit, place)
+        ? DynamicDigit(digit, duration: _duration, colors: widget.colors)
+        : DigitSwitcher(digit);
   }
 
-  bool _shouldDoDynamic(Unit unit, Place place) {
+  /// per unit or digit decision whether to show special time change animation
+  bool _shouldDoDynamic(DateTime nextTime, unit, Place place) {
     switch (unit) {
       case Unit.hours:
-        if (place == Place.tens) {
-          return _hour % 12 == 0 && _minute == 0 && _second == 0;
-        }
-        // ones
-        return _minute == 0 && _second == 0;
+        return nextTime.minute == 0 && nextTime.second == 0;
 
       case Unit.minutes:
-        if (place == Place.tens) {
-          return _minute % 10 == 0 && _second == 0;
-        }
-        // ones
-        return _second == 0;
-
       case Unit.seconds:
-        return _second % 10 == 0;
+        return nextTime.minute % 15 == 0 && nextTime.second == 0;
     }
   }
 
