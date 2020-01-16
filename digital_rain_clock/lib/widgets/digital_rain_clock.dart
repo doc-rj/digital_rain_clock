@@ -34,6 +34,7 @@ class _DigitalRainClockState extends State<DigitalRainClock>
     with SingleTickerProviderStateMixin {
   String _ideograph;
   String _message;
+  String _semanticMessage;
 
   @override
   void initState() {
@@ -66,9 +67,13 @@ class _DigitalRainClockState extends State<DigitalRainClock>
     setState(() {
       _ideograph = DigitalRainClock.ideograph[widget.model.weatherCondition];
       _message = _capitalize(widget.model.weatherString) +
-          " ${_temperatureString(widget.model.temperature)}" +
-          "\u{2005}\u{25b2}${_temperatureString(widget.model.high)}" +
-          "\u{2005}\u{25bc}${_temperatureString(widget.model.low)}";
+          ' ${_temperatureString(widget.model.temperature)}' +
+          '\u{2005}\u{25b2}${_temperatureString(widget.model.high)}' +
+          '\u{2005}\u{25bc}${_temperatureString(widget.model.low)}';
+      _semanticMessage = 'The weather is: ${widget.model.weatherString}.' +
+          'The temperature is ${_temperatureString(widget.model.temperature)}' +
+          ', with a high of ${_temperatureString(widget.model.high)}' +
+          ' and a low of ${_temperatureString(widget.model.low)}.';
     });
   }
 
@@ -121,6 +126,7 @@ class _DigitalRainClockState extends State<DigitalRainClock>
             Terminal(
               ideograph: _ideograph,
               text: _message,
+              semanticValue: _semanticMessage,
               colors: colors,
             ),
           ],

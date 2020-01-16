@@ -12,11 +12,13 @@ class Terminal extends StatefulWidget {
       {Key key,
       this.ideograph,
       @required this.text,
+      @required this.semanticValue,
       @required this.colors})
       : super(key: key);
 
   final String ideograph;
   final String text;
+  final String semanticValue;
   final Map colors;
 
   @override
@@ -132,7 +134,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     final opacity = widget.colors == ColorThemes.light ? 0.94 : 0.7;
     return Semantics(
       label: 'date and weather',
-      value: _date + ' ${widget.text}',
+      value: _date + '...${widget.semanticValue}',
       container: true,
       excludeSemantics: true,
       child: Container(
