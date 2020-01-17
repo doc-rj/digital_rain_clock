@@ -7,6 +7,7 @@ class Background extends StatefulWidget {
   const Background({Key key, @required this.model, @required this.colors})
       : super(key: key);
   final ClockModel model;
+  // todo: remove unused colors or use provider
   final Map colors;
 
   @override
@@ -31,7 +32,7 @@ class _BackgroundState extends State<Background>
 
   @override
   void didChangeDependencies() {
-    _updateColors();
+    _updateColors(Theme.of(context).brightness);
   }
 
   @override
@@ -51,12 +52,10 @@ class _BackgroundState extends State<Background>
   }
 
   void _onModelChanged() {
-    _updateColors();
+    _updateColors(Theme.of(context).brightness);
   }
 
-  /// requires build context
-  void _updateColors() {
-    final brightness = Theme.of(context).brightness;
+  void _updateColors(final Brightness brightness) {
     _colors =
         brightness == Brightness.light ? ColorThemes.light : ColorThemes.dark;
     _updateSearchlight();

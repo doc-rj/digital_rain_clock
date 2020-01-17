@@ -8,6 +8,18 @@ class DigitalRain extends StatelessWidget {
   final ClockModel model;
   final Map colors;
 
+  /// This multiplier controls digital rain stream width, and it's multiplied
+  /// by the max char fontSize to compute said width. The greater the width, the
+  /// smaller the number of streams, and vice-versa. Beware, as too many char
+  /// streams may push the UI and GPU threads past their jank-free limits,
+  /// depending on the host device. Use with caution.
+  ///
+  /// A multiplier of 0.66 will fill the width of the screen packed wall-to-wall
+  /// with streams, but with potentially many dropped frames; in some profile
+  /// mode testing, I found a multiplier of 2.0 to be a fair compromise between
+  /// good looks and performance.
+  static const kStreamWidthMultiplier = 2.0;
+
   @override
   Widget build(BuildContext context) {
     return ExcludeSemantics(
@@ -31,9 +43,9 @@ class DigitalRain extends StatelessWidget {
   }
 
   List<Widget> _buildRain(BuildContext context, BoxConstraints constraints) {
-    // fill the space per parent constraints, but limit the number of streams
-    // due to performance considerations
-    final streamWidth = CharStream.kMaxSize * 2;
+    // filling the space per parent constraints, but limiting the number of
+    // streams due to performance considerations
+    final streamWidth = CharStream.kMaxSize * kStreamWidthMultiplier;
     final mainAxisSize = model.weatherCondition == WeatherCondition.windy
         ? constraints.maxWidth
         : constraints.maxHeight;
@@ -45,10 +57,10 @@ class DigitalRain extends StatelessWidget {
       numStreams,
       (_) => Expanded(
         child: CharStream(
-            axisSize: mainAxisSize,
-            height: constraints.maxHeight,
-            model: model,
-            colors: colors,
+          axisSize: mainAxisSize,
+          height: constraints.maxHeight,
+          model: model,
+          colors: colors,
         ),
       ),
     );

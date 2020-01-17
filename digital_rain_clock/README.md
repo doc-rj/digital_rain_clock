@@ -1,3 +1,5 @@
 # Digital Rain Clock
 
-This app is an entry in the Flutter Clock challenge.
+This app was designed for the [Flutter Clock challenge](https://flutter.dev/clock).
+
+

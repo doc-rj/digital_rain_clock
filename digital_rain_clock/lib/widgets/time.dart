@@ -10,11 +10,9 @@ enum Unit { hours, minutes, seconds }
 enum Place { tens, ones }
 
 class Time extends StatefulWidget {
-  const Time({Key key, @required this.model, @required this.colors})
-      : super(key: key);
+  const Time({Key key, @required this.model}) : super(key: key);
 
   final ClockModel model;
-  final Map colors;
 
   @override
   _TimeState createState() => _TimeState();
@@ -146,7 +144,7 @@ class _TimeState extends State<Time> {
   Widget _digit(int value, Unit unit, Place place) {
     final digit = place == Place.tens ? value ~/ 10 : value % 10;
     return _dynamic && _shouldDoDynamic(_nextTime, unit, place)
-        ? DynamicDigit(digit, duration: _duration, colors: widget.colors)
+        ? DynamicDigit(digit, duration: _duration)
         : DigitSwitcher(digit);
   }
 

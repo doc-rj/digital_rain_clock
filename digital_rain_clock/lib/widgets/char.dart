@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../themes.dart';
 import '../charset.dart';
 
 class Char extends StatelessWidget {
@@ -8,13 +7,13 @@ class Char extends StatelessWidget {
     Key key,
     @required this.fontSize,
     @required this.color,
-    @required this.colors,
-    this.opacity = 1.0
+    @required this.shadowColor,
+    this.opacity = 1.0,
   }) : super(key: key);
 
   final double fontSize;
   final Color color;
-  final Map colors;
+  final Color shadowColor;
   final double opacity;
 
   @override
@@ -29,7 +28,7 @@ class Char extends StatelessWidget {
           Shadow(
             offset: Offset(0.0, 0.0),
             blurRadius: 3.0,
-            color: colors[ColorElement.char_shadow],
+            color: shadowColor,
           ),
         ],
       ),

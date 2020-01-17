@@ -16,27 +16,47 @@ class CharStream extends StatefulWidget {
     @required this.colors,
   }) : super(key: key);
 
+  /// size of the axis along which the char stream will travel
   final double axisSize;
+
+  /// height is parent height and may or may not be the same as the axis
+  /// size, eg. in windy conditions; height is used to determine the length
+  /// of the char stream, so that chars don't become compressed and distorted
+  /// when switching modes, eg. between windy and other conditions.
   final double height;
+
   final ClockModel model;
   final Map colors;
 
+  /// min and max font sizes in integer form; char stream will use a random
+  /// size from this range
   static const kMinSize = 16;
-  static const kMaxSize = 19;
-  static const kScaleMultiplier = 1 / kMaxSize;
+  static const kMaxSize = 20;
 
+  /// used to determine the stream's speed of travel; streams with larger font
+  /// size are more likely to fly faster as they are "nearer".
+  static const kDurationRatio = 1 / kMaxSize;
+
+  /// normal duration range in seconds
   static const kMinDuration = 5;
   static const kMaxDuration = 10;
+
+  /// duration range in seconds for fast mode, eg. thunderstorm conditions
   static const kMinDurationFast = 3;
   static const kMaxDurationFast = 6;
 
-  static const kLeadCharOpacity = {
+  /// default char opacity
+  static const kDefaultOpacity = 0.6;
+
+  /// map lead char index to opacity
+  static const kLeadOpacity = {
     0: 0.6,
     1: 0.7,
     2: 0.9,
   };
 
-  static const kTrailCharOpacity = {
+  /// map trail char index to opacity, indices not found will get default
+  static const kTrailOpacity = {
     0: 0.1,
     1: 0.2,
     2: 0.2,
@@ -129,7 +149,7 @@ class _CharStreamState extends State<CharStream>
   }
 
   int _duration(double fontSize) {
-    final scaleRatio = fontSize * CharStream.kScaleMultiplier;
+    final scaleRatio = fontSize * CharStream.kDurationRatio;
     return _nextRandom(minDuration, maxDuration) ~/ scaleRatio;
   }
 
@@ -172,15 +192,17 @@ class _CharStreamState extends State<CharStream>
             ? DynamicChar(
                 fontSize: fontSize,
                 color: widget.colors[ColorElement.trail_char],
-                colors: widget.colors,
-                opacity: CharStream.kTrailCharOpacity[index] ?? 0.6,
+                shadowColor: widget.colors[ColorElement.char_shadow],
+                opacity: CharStream.kTrailOpacity[index] ??
+                    CharStream.kDefaultOpacity,
                 period: 1000,
               )
             : Char(
                 fontSize: fontSize,
                 color: widget.colors[ColorElement.trail_char],
-                colors: widget.colors,
-                opacity: CharStream.kTrailCharOpacity[index] ?? 0.6,
+                shadowColor: widget.colors[ColorElement.char_shadow],
+                opacity: CharStream.kTrailOpacity[index] ??
+                    CharStream.kDefaultOpacity,
               ),
       );
     });
@@ -199,8 +221,8 @@ class _CharStreamState extends State<CharStream>
         child: DynamicChar(
       fontSize: fontSize,
       color: widget.colors[ColorElement.lead_char],
-      colors: widget.colors,
-      opacity: CharStream.kLeadCharOpacity[index] ?? 0.6,
+      shadowColor: widget.colors[ColorElement.char_shadow],
+      opacity: CharStream.kLeadOpacity[index] ?? CharStream.kDefaultOpacity,
       period: position == 1 ? 300 : 1000,
     ));
   }

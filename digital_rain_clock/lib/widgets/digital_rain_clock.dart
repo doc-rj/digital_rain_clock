@@ -122,7 +122,7 @@ class _DigitalRainClockState extends State<DigitalRainClock>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Time(model: widget.model, colors: colors),
+            Time(model: widget.model),
             Terminal(
               ideograph: _ideograph,
               text: _message,

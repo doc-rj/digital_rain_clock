@@ -6,11 +6,9 @@ class DynamicDigit extends StatefulWidget {
     this.digit, {
     Key key,
     this.duration = 500,
-    @required this.colors,
   }) : super(key: key);
 
   final int digit;
-  final Map colors;
   final int duration;
 
   static final scaleTween = Tween<double>(

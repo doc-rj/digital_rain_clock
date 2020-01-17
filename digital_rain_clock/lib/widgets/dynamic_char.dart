@@ -7,14 +7,14 @@ class DynamicChar extends StatefulWidget {
     Key key,
     @required this.fontSize,
     @required this.color,
-    @required this.colors,
+    @required this.shadowColor,
     this.opacity = 1.0,
     this.period = 1000
   }) : super(key: key);
 
   final double fontSize;
   final Color color;
-  final Map colors;
+  final Color shadowColor;
   final double opacity;
   final int period;
 
@@ -43,7 +43,7 @@ class _DynamicCharState extends State<DynamicChar> {
       _char = Char(
           fontSize: widget.fontSize,
           color: widget.color,
-          colors: widget.colors,
+          shadowColor: widget.shadowColor,
           opacity: widget.opacity,
       );
       _timer = Timer(
