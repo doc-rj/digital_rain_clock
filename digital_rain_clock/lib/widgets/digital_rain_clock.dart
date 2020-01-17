@@ -13,7 +13,10 @@ import 'time.dart';
 import 'terminal.dart';
 
 class DigitalRainClock extends StatefulWidget {
-  const DigitalRainClock({Key key, @required this.model}) : super(key: key);
+  const DigitalRainClock({Key key, @required this.model})
+      : assert(model != null),
+        super(key: key);
+
   final ClockModel model;
 
   static const ideograph = {

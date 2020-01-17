@@ -5,14 +5,19 @@ import 'package:flutter/rendering.dart';
 class TerminalAnimation extends StatelessWidget {
   TerminalAnimation({
     Key key,
-    this.startCursorOn = false,
     this.ideograph,
     this.ideographStyle,
+    this.startCursorOn = false,
     @required this.message,
     @required this.messageStyle,
     @required this.cursorStyle,
     @required this.controller,
-  })  : startCursor = StepTween(
+  })  : assert(startCursorOn != null),
+        assert(message != null),
+        assert(messageStyle != null),
+        assert(cursorStyle != null),
+        assert(controller != null),
+        startCursor = StepTween(
           begin: 0,
           end: kStartSteps,
         ).animate(CurvedAnimation(
@@ -33,11 +38,11 @@ class TerminalAnimation extends StatelessWidget {
           parent: controller,
           curve: kEndInterval,
         )),
-        cursorOn = TextSpan(
+        cursorOnSpan = TextSpan(
           text: '\u{2587}',
           style: cursorStyle,
         ),
-        cursorOff = TextSpan(
+        cursorOffSpan = TextSpan(
           text: '\u{00a0}',
           style: cursorStyle,
         ),
@@ -56,6 +61,7 @@ class TerminalAnimation extends StatelessWidget {
   final bool startCursorOn;
   final String ideograph;
   final String message;
+
   final TextStyle ideographStyle;
   final TextStyle messageStyle;
   final TextStyle cursorStyle;
@@ -65,8 +71,8 @@ class TerminalAnimation extends StatelessWidget {
   final Animation<int> charCount;
   final Animation<int> endCursor;
 
-  final TextSpan cursorOn;
-  final TextSpan cursorOff;
+  final TextSpan cursorOnSpan;
+  final TextSpan cursorOffSpan;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +94,7 @@ class TerminalAnimation extends StatelessWidget {
 
   List<TextSpan> _buildTextSpans() {
     final spans = List<TextSpan>();
-    if (ideograph != null) {
+    if (_shouldShowIdeograph()) {
       spans.add(TextSpan(
         text: ideograph.substring(0, charCount.value == 0 ? 0 : 1),
         style: ideographStyle,
@@ -98,18 +104,18 @@ class TerminalAnimation extends StatelessWidget {
       text: _buildMessage(),
       style: messageStyle,
     ));
-    spans.add(_shouldShowCursor() ? cursorOn : cursorOff);
+    spans.add(_shouldShowCursor() ? cursorOnSpan : cursorOffSpan);
     return spans;
   }
 
   String _buildMessage() {
-    final prefix = ideograph != null ? '\u{2005}' : '';
-    final endIndex = max(0, charCount.value - (ideograph != null ? 1 : 0));
+    final prefix = _shouldShowIdeograph() ? '\u{2005}' : '';
+    final endIndex = max(0, charCount.value - (_shouldShowIdeograph() ? 1 : 0));
     return prefix + message.substring(0, endIndex) + '\u{2005}';
   }
 
   bool _shouldShowCursor() {
-    final textLength = message.length + (ideograph != null ? 1 : 0);
+    final textLength = message.length + (_shouldShowIdeograph() ? 1 : 0);
     if (charCount.value == 0) {
       int blinkValue = startCursor.value % 2;
       return startCursorOn ? blinkValue == 0 : blinkValue != 0;
@@ -117,5 +123,9 @@ class TerminalAnimation extends StatelessWidget {
       return endCursor.value % 2 == 0;
     }
     return true;
+  }
+
+  bool _shouldShowIdeograph() {
+    return ideograph != null && ideographStyle != null;
   }
 }

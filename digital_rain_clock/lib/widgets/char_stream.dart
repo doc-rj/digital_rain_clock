@@ -14,7 +14,11 @@ class CharStream extends StatefulWidget {
     @required this.height,
     @required this.model,
     @required this.colors,
-  }) : super(key: key);
+  })  : assert(axisSize != null),
+        assert(height != null),
+        assert(model != null),
+        assert(colors != null),
+        super(key: key);
 
   /// size of the axis along which the char stream will travel
   final double axisSize;

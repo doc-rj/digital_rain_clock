@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class DigitSwitcher extends StatelessWidget {
-  const DigitSwitcher(this.digit, {Key key}) : super(key: key);
+  const DigitSwitcher(this.digit, {Key key})
+      : assert(digit != null),
+        super(key: key);
+
   final int digit;
 
   @override
@@ -11,8 +14,8 @@ class DigitSwitcher extends StatelessWidget {
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeOut,
       child: Text(
-          digit.toString(),
-          key: ValueKey<int>(digit),
+        digit.toString(),
+        key: ValueKey<int>(digit),
       ),
     );
   }

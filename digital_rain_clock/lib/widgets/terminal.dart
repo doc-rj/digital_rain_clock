@@ -14,7 +14,10 @@ class Terminal extends StatefulWidget {
       @required this.text,
       @required this.semanticValue,
       @required this.colors})
-      : super(key: key);
+      : assert(text != null),
+        assert(semanticValue != null),
+        assert(colors != null),
+        super(key: key);
 
   final String ideograph;
   final String text;
@@ -45,8 +48,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     _animationController = AnimationController(
       duration: TerminalAnimation.kSuggestedDuration,
       vsync: this,
-    );
-    _animationController.addStatusListener(_onAnimationStatus);
+    )..addStatusListener(_onAnimationStatus);
     _animationController.forward();
   }
 
@@ -157,9 +159,9 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         ),
         alignment: Alignment.bottomCenter,
         child: TerminalAnimation(
-          startCursorOn: _startOn,
           ideograph: _index > 0 ? widget.ideograph : null,
           ideographStyle: _ideographStyle,
+          startCursorOn: _startOn,
           message: _messages[_index],
           messageStyle: _textStyle,
           cursorStyle: _cursorStyle,

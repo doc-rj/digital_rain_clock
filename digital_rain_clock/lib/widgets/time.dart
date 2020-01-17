@@ -10,7 +10,9 @@ enum Unit { hours, minutes, seconds }
 enum Place { tens, ones }
 
 class Time extends StatefulWidget {
-  const Time({Key key, @required this.model}) : super(key: key);
+  const Time({Key key, @required this.model})
+      : assert(model != null),
+        super(key: key);
 
   final ClockModel model;
 
@@ -28,7 +30,7 @@ class _TimeState extends State<Time> {
 
   String _semanticValue;
   Timer _timer;
-  int _duration;
+  Duration _duration;
 
   @override
   void initState() {
@@ -54,11 +56,9 @@ class _TimeState extends State<Time> {
       _nextTime = time.add(Duration(seconds: 1));
       _dynamic = _nextTime.minute % 15 == 0;
       final millisLeft = 1000 - time.millisecond;
-      _duration = _dynamic ? max(500, millisLeft) : millisLeft;
-      _timer = Timer(
-        Duration(milliseconds: _duration),
-        _updateTime,
-      );
+      _duration =
+          Duration(milliseconds: _dynamic ? max(500, millisLeft) : millisLeft);
+      _timer = Timer(_duration, _updateTime);
     });
   }
 

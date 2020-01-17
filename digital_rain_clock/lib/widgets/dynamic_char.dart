@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'char.dart';
 
 class DynamicChar extends StatefulWidget {
-  const DynamicChar({
-    Key key,
-    @required this.fontSize,
-    @required this.color,
-    @required this.shadowColor,
-    this.opacity = 1.0,
-    this.period = 1000
-  }) : super(key: key);
+  const DynamicChar(
+      {Key key,
+      @required this.fontSize,
+      @required this.color,
+      @required this.shadowColor,
+      this.opacity = 1.0,
+      this.period = 1000})
+      : assert(fontSize != null),
+        assert(color != null),
+        assert(shadowColor != null),
+        assert(opacity != null),
+        assert(period != null),
+        super(key: key);
 
   final double fontSize;
   final Color color;
@@ -41,10 +46,10 @@ class _DynamicCharState extends State<DynamicChar> {
   void _updateChar() {
     setState(() {
       _char = Char(
-          fontSize: widget.fontSize,
-          color: widget.color,
-          shadowColor: widget.shadowColor,
-          opacity: widget.opacity,
+        fontSize: widget.fontSize,
+        color: widget.color,
+        shadowColor: widget.shadowColor,
+        opacity: widget.opacity,
       );
       _timer = Timer(
         Duration(milliseconds: widget.period),

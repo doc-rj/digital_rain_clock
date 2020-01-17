@@ -5,7 +5,10 @@ import '../themes.dart';
 
 class Background extends StatefulWidget {
   const Background({Key key, @required this.model, @required this.colors})
-      : super(key: key);
+      : assert(model != null),
+        assert(colors != null),
+        super(key: key);
+
   final ClockModel model;
   // todo: remove unused colors or use provider
   final Map colors;
@@ -69,8 +72,7 @@ class _BackgroundState extends State<Background>
       _searchlight = searchlight;
       _animationController.repeat(
           reverse: searchlight,
-          period: Duration(seconds: searchlight ? 12 : 20)
-      );
+          period: Duration(seconds: searchlight ? 12 : 20));
     }
   }
 
