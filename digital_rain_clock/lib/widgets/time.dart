@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../themes.dart';
+import '../solid_shadow.dart';
 import 'dynamic_digit.dart';
 import 'digit_switcher.dart';
 
@@ -29,6 +31,7 @@ class _TimeState extends State<Time> {
   DateTime _nextTime;
   bool _dynamic = false;
 
+  TextStyle _digitStyle;
   String _semanticValue;
   Timer _timer;
   Duration _duration;
@@ -37,6 +40,26 @@ class _TimeState extends State<Time> {
   void initState() {
     super.initState();
     _updateTime();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // will trigger this method whenever the theme changes
+    final colors = ColorThemes.colorsFor(Theme.of(context).brightness);
+    _digitStyle = TextStyle(
+      color: colors[ColorElement.digit]
+          .withOpacity(colors == ColorThemes.light ? 0.7 : 0.9),
+      fontFamily: 'OCRA',
+      fontSize: MediaQuery.of(context).size.width / 6,
+      shadows: [
+        SolidShadow(
+          blurRadius: 3,
+          color: colors[ColorElement.shadow].withOpacity(0.8),
+          offset: Offset(3, 3),
+        ),
+      ],
+    );
   }
 
   @override
@@ -70,74 +93,77 @@ class _TimeState extends State<Time> {
       value: _semanticValue,
       container: true,
       excludeSemantics: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_hour, Unit.hours, Place.tens),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_hour, Unit.hours, Place.ones),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              ':',
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                fontSize: 44.0,
-                letterSpacing: 0.0,
+      child: DefaultTextStyle(
+        style: _digitStyle,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_hour, Unit.hours, Place.tens),
               ),
             ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_minute, Unit.minutes, Place.tens),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_minute, Unit.minutes, Place.ones),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              ':',
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                fontSize: 44.0,
-                letterSpacing: 0.0,
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_hour, Unit.hours, Place.ones),
               ),
             ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_second, Unit.seconds, Place.tens),
+            Expanded(
+              flex: 2,
+              child: Text(
+                ':',
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 44.0,
+                  letterSpacing: 0.0,
+                ),
+              ),
             ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: _digit(_second, Unit.seconds, Place.ones),
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_minute, Unit.minutes, Place.tens),
+              ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.only(right: 1.0),
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_minute, Unit.minutes, Place.ones),
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 2,
+              child: Text(
+                ':',
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 44.0,
+                  letterSpacing: 0.0,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_second, Unit.seconds, Place.tens),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _digit(_second, Unit.seconds, Place.ones),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: EdgeInsets.only(right: 1.0),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

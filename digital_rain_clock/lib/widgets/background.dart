@@ -34,7 +34,10 @@ class _BackgroundState extends State<Background>
     final model = Provider.of<ClockModel>(context, listen: true);
     _weatherCondition = model.weatherCondition;
     // will trigger this method whenever the theme changes
-    _updateColors(Theme.of(context).brightness);
+    final brightness = Theme.of(context).brightness;
+    _colors =
+        brightness == Brightness.light ? ColorThemes.light : ColorThemes.dark;
+    _updateSearchlight(_colors);
   }
 
   @override
@@ -43,14 +46,8 @@ class _BackgroundState extends State<Background>
     super.dispose();
   }
 
-  void _updateColors(final Brightness brightness) {
-    _colors =
-        brightness == Brightness.light ? ColorThemes.light : ColorThemes.dark;
-    _updateSearchlight(_colors);
-  }
-
   /// simulates a roving searchlight/spotlight in darker conditions;
-  /// update the animation when the mode changes to/from "searchlight"
+  /// this updates the animation when the mode changes to/from "searchlight"
   void _updateSearchlight(final Map colors) {
     bool searchlight = colors == ColorThemes.dark ||
         _weatherCondition == WeatherCondition.foggy ||
