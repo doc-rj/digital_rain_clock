@@ -61,9 +61,15 @@ class ColorThemes {
   };
 
   static Color background(Map colors, WeatherCondition condition,
-      {Color defaultColor = null}) {
+      {Color defaultColor}) {
     final defaultBg = defaultColor ?? colors[ColorElement.background];
     ColorElement colorKey = conditions[condition];
     return colorKey != null ? colors[colorKey] ?? defaultBg : defaultBg;
+  }
+
+  static Map colorsFor(final Brightness brightness) {
+    return brightness == Brightness.light
+        ? ColorThemes.light
+        : ColorThemes.dark;
   }
 }

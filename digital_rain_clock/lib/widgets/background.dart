@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
-
+import 'package:provider/provider.dart';
 import '../themes.dart';
 
 class Background extends StatefulWidget {
-  const Background({Key key, @required this.model, @required this.colors})
-      : assert(model != null),
-        assert(colors != null),
-        super(key: key);
-
-  final ClockModel model;
-  // todo: remove unused colors or use provider
-  final Map colors;
+  const Background({Key key}) : super(key: key);
 
   @override
   _BackgroundState createState() => _BackgroundState();
@@ -19,8 +12,10 @@ class Background extends StatefulWidget {
 
 class _BackgroundState extends State<Background>
     with SingleTickerProviderStateMixin {
+
   Map _colors;
   bool _searchlight;
+  WeatherCondition _weatherCondition;
   AnimationController _animationController;
   Animation _gradientStop;
 
@@ -30,44 +25,36 @@ class _BackgroundState extends State<Background>
     _animationController = AnimationController(vsync: this);
     _gradientStop = Tween<double>(begin: -1.0, end: 1.0).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.linear));
-    widget.model.addListener(_onModelChanged);
   }
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
+    // will trigger this method whenever the model changes
+    final model = Provider.of<ClockModel>(context, listen: true);
+    _weatherCondition = model.weatherCondition;
+    // will trigger this method whenever the theme changes
     _updateColors(Theme.of(context).brightness);
-  }
-
-  @override
-  void didUpdateWidget(Background oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.model != oldWidget.model) {
-      oldWidget.model.removeListener(_onModelChanged);
-      widget.model.addListener(_onModelChanged);
-    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    widget.model.removeListener(_onModelChanged);
     super.dispose();
-  }
-
-  void _onModelChanged() {
-    _updateColors(Theme.of(context).brightness);
   }
 
   void _updateColors(final Brightness brightness) {
     _colors =
         brightness == Brightness.light ? ColorThemes.light : ColorThemes.dark;
-    _updateSearchlight();
+    _updateSearchlight(_colors);
   }
 
-  void _updateSearchlight() {
-    bool searchlight = _colors == ColorThemes.dark ||
-        widget.model.weatherCondition == WeatherCondition.foggy ||
-        widget.model.weatherCondition == WeatherCondition.thunderstorm;
+  /// simulates a roving searchlight/spotlight in darker conditions;
+  /// update the animation when the mode changes to/from "searchlight"
+  void _updateSearchlight(final Map colors) {
+    bool searchlight = colors == ColorThemes.dark ||
+        _weatherCondition == WeatherCondition.foggy ||
+        _weatherCondition == WeatherCondition.thunderstorm;
     if (searchlight != _searchlight) {
       _searchlight = searchlight;
       _animationController.repeat(
@@ -97,9 +84,9 @@ class _BackgroundState extends State<Background>
             _gradientStop.value + (_searchlight ? 0.2 : 0.6),
           ],
           colors: [
-            ColorThemes.background(_colors, widget.model.weatherCondition),
+            ColorThemes.background(_colors, _weatherCondition),
             _colors[ColorElement.highlight],
-            ColorThemes.background(_colors, widget.model.weatherCondition),
+            ColorThemes.background(_colors, _weatherCondition),
           ],
         ),
       ),

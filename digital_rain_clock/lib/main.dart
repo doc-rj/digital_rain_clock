@@ -7,6 +7,7 @@ import 'package:flutter_clock_helper/customizer.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'widgets/digital_rain_clock.dart';
 
 /// overrides for desktop platforms not supported by TargetPlatform
@@ -18,5 +19,6 @@ void _setTargetPlatformForDesktop() {
 
 void main() {
   _setTargetPlatformForDesktop();
-  runApp(ClockCustomizer((ClockModel model) => DigitalRainClock(model: model)));
+  runApp(ClockCustomizer((ClockModel model) =>
+      ChangeNotifierProvider.value(value: model, child: DigitalRainClock())));
 }

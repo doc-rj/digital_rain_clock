@@ -1,23 +1,22 @@
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_clock_helper/model.dart';
 
 import '../themes.dart';
 import 'dynamic_char.dart';
 import 'char.dart';
 
+enum Speed { slow, medium, fast }
+
 class CharStream extends StatefulWidget {
   const CharStream({
     Key key,
     @required this.axisSize,
     @required this.height,
-    @required this.model,
-    @required this.colors,
   })  : assert(axisSize != null),
         assert(height != null),
-        assert(model != null),
-        assert(colors != null),
         super(key: key);
 
   /// size of the axis along which the char stream will travel
@@ -29,9 +28,6 @@ class CharStream extends StatefulWidget {
   /// when switching modes, eg. between windy and other conditions.
   final double height;
 
-  final ClockModel model;
-  final Map colors;
-
   /// min and max font sizes in integer form; char stream will use a random
   /// size from this range
   static const kMinSize = 16;
@@ -40,14 +36,6 @@ class CharStream extends StatefulWidget {
   /// used to determine the stream's speed of travel; streams with larger font
   /// size are more likely to fly faster as they are "nearer".
   static const kDurationRatio = 1 / kMaxSize;
-
-  /// normal duration range in seconds
-  static const kMinDuration = 5;
-  static const kMaxDuration = 10;
-
-  /// duration range in seconds for fast mode, eg. thunderstorm conditions
-  static const kMinDurationFast = 3;
-  static const kMaxDurationFast = 6;
 
   /// default char opacity
   static const kDefaultOpacity = 0.6;
@@ -70,6 +58,20 @@ class CharStream extends StatefulWidget {
     6: 0.4,
   };
 
+  /// map speed mode to min duration
+  static const kMinDuration = {
+    Speed.slow: 5,
+    Speed.medium: 4,
+    Speed.fast: 3,
+  };
+
+  /// map speed mode to max duration
+  static const kMaxDuration = {
+    Speed.slow: 10,
+    Speed.medium: 7,
+    Speed.fast: 6,
+  };
+
   @override
   _CharStreamState createState() => _CharStreamState();
 }
@@ -78,8 +80,10 @@ class _CharStreamState extends State<CharStream>
     with SingleTickerProviderStateMixin {
   final _random = Random();
 
-  bool _fast = false;
   bool _streamed = false;
+  Speed _speed = Speed.slow;
+  Map _colors;
+
   Alignment _alignment = Alignment.center;
   List<Widget> _chars = <Widget>[];
   AnimationController _animationController;
@@ -87,40 +91,47 @@ class _CharStreamState extends State<CharStream>
   @override
   void initState() {
     super.initState();
-    _updateConditions();
-    widget.model.addListener(_onModelChanged);
     _animationController = AnimationController(
       vsync: this,
       lowerBound: -1.0,
       upperBound: 1.0,
-    );
-    _animationController.addStatusListener(_onAnimationStatus);
-    _stream();
+    )..addStatusListener(_onAnimationStatus);
   }
 
   @override
-  void didUpdateWidget(CharStream oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.model != oldWidget.model) {
-      oldWidget.model.removeListener(_onModelChanged);
-      widget.model.addListener(_onModelChanged);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // will trigger this method whenever the model changes
+    final model = Provider.of<ClockModel>(context, listen: true);
+    _speed = _conditionToSpeed(model.weatherCondition);
+    // will trigger this method whenever the theme changes
+    _colors = ColorThemes.colorsFor(Theme.of(context).brightness);
+    if (!_streamed) {
+      _stream();
     }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    widget.model.removeListener(_onModelChanged);
     super.dispose();
   }
 
-  void _onModelChanged() {
-    _updateConditions();
+  Speed _conditionToSpeed(final WeatherCondition condition) {
+    switch (condition) {
+      case WeatherCondition.rainy:
+        return Speed.medium;
+      case WeatherCondition.thunderstorm:
+        return Speed.fast;
+      default:
+        return Speed.slow;
+    }
   }
 
-  void _updateConditions() {
+  void _onModelChanged() {
     // no setState() here, as the next stream will catch up
-    _fast = widget.model.weatherCondition == WeatherCondition.thunderstorm;
+    final model = Provider.of<ClockModel>(context, listen: false);
+    _speed = _conditionToSpeed(model.weatherCondition);
   }
 
   Future<void> _onAnimationStatus(AnimationStatus status) async {
@@ -130,9 +141,9 @@ class _CharStreamState extends State<CharStream>
   }
 
   Future<void> _stream() async {
+    // eager build before delay
     final fontSize =
         _nextRandom(CharStream.kMinSize, CharStream.kMaxSize).toDouble();
-    // eager build before delay
     _chars = <Widget>[
       ..._buildTrailChars(fontSize),
       ..._buildLeadChars(fontSize),
@@ -157,11 +168,9 @@ class _CharStreamState extends State<CharStream>
     return _nextRandom(minDuration, maxDuration) ~/ scaleRatio;
   }
 
-  int get minDuration =>
-      _fast ? CharStream.kMinDurationFast : CharStream.kMinDuration;
+  int get minDuration => CharStream.kMinDuration[_speed];
 
-  int get maxDuration =>
-      _fast ? CharStream.kMaxDurationFast : CharStream.kMaxDuration;
+  int get maxDuration => CharStream.kMaxDuration[_speed];
 
   @override
   Widget build(BuildContext context) {
@@ -195,16 +204,16 @@ class _CharStreamState extends State<CharStream>
         child: position % 5 == 0
             ? DynamicChar(
                 fontSize: fontSize,
-                color: widget.colors[ColorElement.trail_char],
-                shadowColor: widget.colors[ColorElement.char_shadow],
+                color: _colors[ColorElement.trail_char],
+                shadowColor: _colors[ColorElement.char_shadow],
                 opacity: CharStream.kTrailOpacity[index] ??
                     CharStream.kDefaultOpacity,
                 period: 1000,
               )
             : Char(
                 fontSize: fontSize,
-                color: widget.colors[ColorElement.trail_char],
-                shadowColor: widget.colors[ColorElement.char_shadow],
+                color: _colors[ColorElement.trail_char],
+                shadowColor: _colors[ColorElement.char_shadow],
                 opacity: CharStream.kTrailOpacity[index] ??
                     CharStream.kDefaultOpacity,
               ),
@@ -215,20 +224,16 @@ class _CharStreamState extends State<CharStream>
   List<Flexible> _buildLeadChars(double fontSize) {
     final numChars = 3;
     return List<Flexible>.generate(numChars, (int index) {
-      return _buildLeadChar(index, numChars, fontSize);
+      final position = numChars - index;
+      return Flexible(
+          child: DynamicChar(
+        fontSize: fontSize,
+        color: _colors[ColorElement.lead_char],
+        shadowColor: _colors[ColorElement.char_shadow],
+        opacity: CharStream.kLeadOpacity[index] ?? CharStream.kDefaultOpacity,
+        period: position == 1 ? 300 : 1000,
+      ));
     });
-  }
-
-  Flexible _buildLeadChar(int index, int numChars, double fontSize) {
-    final position = numChars - index;
-    return Flexible(
-        child: DynamicChar(
-      fontSize: fontSize,
-      color: widget.colors[ColorElement.lead_char],
-      shadowColor: widget.colors[ColorElement.char_shadow],
-      opacity: CharStream.kLeadOpacity[index] ?? CharStream.kDefaultOpacity,
-      period: position == 1 ? 300 : 1000,
-    ));
   }
 
   int _nextRandom(int min, int max) => min + _random.nextInt(max - min);

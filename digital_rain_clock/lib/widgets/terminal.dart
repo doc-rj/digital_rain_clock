@@ -8,21 +8,18 @@ import '../solid_box_shadow.dart';
 import 'terminal_animation.dart';
 
 class Terminal extends StatefulWidget {
-  const Terminal(
-      {Key key,
-      this.ideograph,
-      @required this.text,
-      @required this.semanticValue,
-      @required this.colors})
-      : assert(text != null),
+  const Terminal({
+    Key key,
+    this.ideograph,
+    @required this.text,
+    @required this.semanticValue,
+  })  : assert(text != null),
         assert(semanticValue != null),
-        assert(colors != null),
         super(key: key);
 
   final String ideograph;
   final String text;
   final String semanticValue;
-  final Map colors;
 
   @override
   State createState() => new TerminalState();
@@ -34,6 +31,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   TextStyle _cursorStyle;
   AnimationController _animationController;
 
+  Map _colors;
   Timer _timer;
   String _date;
   bool _startOn = false;
@@ -44,7 +42,6 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _updateDate();
-    _updateTextStyles();
     _animationController = AnimationController(
       duration: TerminalAnimation.kSuggestedDuration,
       vsync: this,
@@ -53,10 +50,11 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    _timer?.cancel();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // will trigger this method whenever the theme changes
+    _colors = ColorThemes.colorsFor(Theme.of(context).brightness);
+    _updateTextStyles(_colors);
   }
 
   @override
@@ -66,9 +64,13 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         widget.text != oldWidget.text) {
       _updateDisplayText();
     }
-    if (widget.colors != oldWidget.colors) {
-      _updateTextStyles();
-    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _onAnimationStatus(AnimationStatus status) async {
@@ -105,27 +107,27 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
     });
   }
 
-  void _updateTextStyles() {
+  void _updateTextStyles(final Map colors) {
     setState(() {
       _ideographStyle = TextStyle(
         fontFamily: 'YOzREFM',
         fontSize: 18.0,
         textBaseline: TextBaseline.ideographic,
-        color: widget.colors[ColorElement.tty_text],
+        color: colors[ColorElement.tty_text],
         shadows: [],
       );
       _textStyle = TextStyle(
         fontFamily: 'CourierPrimeCodeItalic',
         fontSize: 16.0,
         height: 1.2,
-        color: widget.colors[ColorElement.tty_text],
+        color: colors[ColorElement.tty_text],
         shadows: [],
       );
       _cursorStyle = TextStyle(
         fontFamily: 'DejaVuSansMono',
         fontSize: 16.0,
         height: 1.0,
-        color: widget.colors[ColorElement.tty_text],
+        color: colors[ColorElement.tty_text],
         shadows: [],
       );
     });
@@ -133,7 +135,7 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final opacity = widget.colors == ColorThemes.light ? 0.94 : 0.7;
+    final opacity = _colors == ColorThemes.light ? 0.94 : 0.7;
     return Semantics(
       label: 'date and weather',
       value: _date + '...${widget.semanticValue}',
@@ -146,13 +148,12 @@ class TerminalState extends State<Terminal> with TickerProviderStateMixin {
         margin: const EdgeInsets.only(left: 10.0, right: 10.0),
         padding: EdgeInsets.only(left: 10.0, right: 10.0),
         decoration: BoxDecoration(
-          color:
-              widget.colors[ColorElement.tty_background].withOpacity(opacity),
+          color: _colors[ColorElement.tty_background].withOpacity(opacity),
           borderRadius: BorderRadius.circular(4.0),
           boxShadow: [
             SolidBoxShadow(
               blurRadius: 4,
-              color: widget.colors[ColorElement.shadow].withOpacity(0.8),
+              color: _colors[ColorElement.shadow].withOpacity(0.8),
               offset: Offset(0.5, 2),
             ),
           ],

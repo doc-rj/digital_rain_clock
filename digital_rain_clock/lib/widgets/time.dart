@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter_clock_helper/model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'dynamic_digit.dart';
 import 'digit_switcher.dart';
 
@@ -10,11 +11,11 @@ enum Unit { hours, minutes, seconds }
 enum Place { tens, ones }
 
 class Time extends StatefulWidget {
-  const Time({Key key, @required this.model})
-      : assert(model != null),
+  const Time({Key key, this.is24HourFormat = false})
+      : assert(is24HourFormat != null),
         super(key: key);
 
-  final ClockModel model;
+  final bool is24HourFormat;
 
   @override
   _TimeState createState() => _TimeState();
@@ -47,10 +48,10 @@ class _TimeState extends State<Time> {
   void _updateTime() {
     setState(() {
       DateTime time = DateTime.now();
-      _hour = widget.model.is24HourFormat ? time.hour : _24to12hour(time.hour);
+      _hour = widget.is24HourFormat ? time.hour : _24to12hour(time.hour);
       _minute = time.minute;
       _second = time.second;
-      _semanticValue = widget.model.is24HourFormat
+      _semanticValue = widget.is24HourFormat
           ? DateFormat.Hms().format(time)
           : DateFormat.jms().format(time);
       _nextTime = time.add(Duration(seconds: 1));

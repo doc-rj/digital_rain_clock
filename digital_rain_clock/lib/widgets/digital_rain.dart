@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
+import 'package:provider/provider.dart';
 import 'char_stream.dart';
 
 class DigitalRain extends StatelessWidget {
-  const DigitalRain({Key key, @required this.model, @required this.colors})
-      : super(key: key);
-  final ClockModel model;
-  final Map colors;
+  const DigitalRain({Key key}) : super(key: key);
 
   /// This multiplier controls digital rain stream width, and it's multiplied
   /// by the max char fontSize to compute said width. The greater the width, the
@@ -25,24 +23,29 @@ class DigitalRain extends StatelessWidget {
     return ExcludeSemantics(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return _buildContainer(context, constraints);
+          return Consumer<ClockModel>(
+            builder: (context, model, child) =>
+                _buildContainer(context, constraints, model),
+          );
         },
       ),
     );
   }
 
-  Widget _buildContainer(BuildContext context, BoxConstraints constraints) {
+  Widget _buildContainer(
+      BuildContext context, BoxConstraints constraints, ClockModel model) {
     return RotatedBox(
       quarterTurns: model.weatherCondition == WeatherCondition.windy ? 3 : 0,
       child: Row(
         children: <Widget>[
-          ..._buildRain(context, constraints),
+          ..._buildRain(context, constraints, model),
         ],
       ),
     );
   }
 
-  List<Widget> _buildRain(BuildContext context, BoxConstraints constraints) {
+  List<Widget> _buildRain(
+      BuildContext context, BoxConstraints constraints, ClockModel model) {
     // filling the space per parent constraints, but limiting the number of
     // streams due to performance considerations
     final streamWidth = CharStream.kMaxSize * kStreamWidthMultiplier;
@@ -59,8 +62,6 @@ class DigitalRain extends StatelessWidget {
         child: CharStream(
           axisSize: mainAxisSize,
           height: constraints.maxHeight,
-          model: model,
-          colors: colors,
         ),
       ),
     );
