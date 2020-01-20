@@ -6,6 +6,15 @@ The app runs on both Android and iOS, though most of the testing and tweaking wa
 
 Note that the app has not been tested on smart clock hardware or with Android Things OS, which may impose stricter performance constraints. Refer to [lib/widgets/digital_rain.dart](./lib/widgets/digital_rain.dart) for one of the key constants that may be tweaked for performance.
 
+### Dark
+
+<img src='dark.png' width='350'>
+
+### Light
+
+<img src='light_sunny.png' width='350'>
+
+<img src='light_rainy.png' width='350'>
 
 ## License
 
