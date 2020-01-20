@@ -6,10 +6,10 @@ import 'package:intl/intl.dart';
 
 import '../themes.dart';
 import '../solid_shadow.dart';
-import 'dynamic_digit.dart';
-import 'digit_switcher.dart';
+import 'switcher.dart';
+import 'entry_exit.dart';
 
-enum Unit { hours, minutes, seconds }
+enum Mode { entry, exit, normal }
 enum Place { tens, ones }
 
 class Time extends StatefulWidget {
@@ -28,13 +28,11 @@ class _TimeState extends State<Time> {
   int _minute;
   int _second;
 
-  DateTime _nextTime;
-  bool _dynamic = false;
-
   TextStyle _digitStyle;
   String _semanticValue;
-  Timer _timer;
   Duration _duration;
+  Timer _timer;
+  Mode _mode;
 
   @override
   void initState() {
@@ -70,20 +68,39 @@ class _TimeState extends State<Time> {
 
   void _updateTime() {
     setState(() {
-      DateTime time = DateTime.now();
-      _hour = widget.is24HourFormat ? time.hour : _24to12hour(time.hour);
-      _minute = time.minute;
-      _second = time.second;
+      DateTime now = DateTime.now();
+      _hour = widget.is24HourFormat ? now.hour : _from24to12hour(now.hour);
+      _minute = now.minute;
+      _second = now.second;
       _semanticValue = widget.is24HourFormat
-          ? DateFormat.Hms().format(time)
-          : DateFormat.jms().format(time);
-      _nextTime = time.add(Duration(seconds: 1));
-      _dynamic = _nextTime.minute % 15 == 0;
-      final millisLeft = 1000 - time.millisecond;
-      _duration =
-          Duration(milliseconds: _dynamic ? max(500, millisLeft) : millisLeft);
+          ? DateFormat.Hms().format(now)
+          : DateFormat.jms().format(now);
+      _mode = _computeMode(now);
+      final millisLeft = 1000 - now.millisecond;
+      _duration = Duration(
+        milliseconds: _mode == Mode.entry ? max(500, millisLeft) : millisLeft,
+      );
       _timer = Timer(_duration, _updateTime);
     });
+  }
+
+  /// every half hour, this causes an exit animation followed by an entry
+  /// animation: exit on second 58, and entry on second 59
+  Mode _computeMode(final DateTime time) {
+    if (time.second < 58 || (time.minute + 1) % 30 > 0) {
+      return Mode.normal;
+    } else if (time.second == 58) {
+      return Mode.exit;
+    } else {
+      // time.second == 59
+      return Mode.entry;
+    }
+  }
+
+  int _from24to12hour(int hour) {
+    final period = hour < 12 ? DayPeriod.am : DayPeriod.pm;
+    final offset = period == DayPeriod.am ? 0 : 12;
+    return hour - offset;
   }
 
   @override
@@ -101,13 +118,13 @@ class _TimeState extends State<Time> {
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_hour, Unit.hours, Place.tens),
+                child: _digit(_hour, Place.tens),
               ),
             ),
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_hour, Unit.hours, Place.ones),
+                child: _digit(_hour, Place.ones),
               ),
             ),
             Expanded(
@@ -124,13 +141,13 @@ class _TimeState extends State<Time> {
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_minute, Unit.minutes, Place.tens),
+                child: _digit(_minute, Place.tens),
               ),
             ),
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_minute, Unit.minutes, Place.ones),
+                child: _digit(_minute, Place.ones),
               ),
             ),
             Expanded(
@@ -147,13 +164,13 @@ class _TimeState extends State<Time> {
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_second, Unit.seconds, Place.tens),
+                child: _digit(_second, Place.tens),
               ),
             ),
             Expanded(
               flex: 4,
               child: Center(
-                child: _digit(_second, Unit.seconds, Place.ones),
+                child: _digit(_second, Place.ones),
               ),
             ),
             Expanded(
@@ -168,29 +185,19 @@ class _TimeState extends State<Time> {
     );
   }
 
-  Widget _digit(int value, Unit unit, Place place) {
+  Widget _digit(int value, Place place) {
     final digit = place == Place.tens ? value ~/ 10 : value % 10;
-    return _dynamic && _shouldDoDynamic(_nextTime, unit, place)
-        ? DynamicDigit(digit, duration: _duration)
-        : DigitSwitcher(digit);
-  }
-
-  /// per unit or digit decision whether to show special time change animation
-  bool _shouldDoDynamic(DateTime nextTime, unit, Place place) {
-    switch (unit) {
-      case Unit.hours:
-        return nextTime.minute == 0 && nextTime.second == 0;
-
-      case Unit.minutes:
-      case Unit.seconds:
-        return nextTime.minute % 15 == 0 && nextTime.second == 0;
+    final child = Text(digit.toString(), key: ValueKey<int>(digit));
+    switch (_mode) {
+      case Mode.entry:
+        return EntryExit(child: child, duration: _duration, isEntry: true);
+      case Mode.exit:
+        return Switcher(
+          child: EntryExit(child: child, duration: _duration, isEntry: false),
+        );
+      case Mode.normal:
+      default:
+        return Switcher(child: child);
     }
-  }
-
-  /// slightly more efficient than DateFormat format with 'hh'
-  int _24to12hour(int hour) {
-    final period = hour < 12 ? DayPeriod.am : DayPeriod.pm;
-    final offset = period == DayPeriod.am ? 0 : 12;
-    return hour - offset;
   }
 }

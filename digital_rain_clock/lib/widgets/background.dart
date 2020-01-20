@@ -12,7 +12,6 @@ class Background extends StatefulWidget {
 
 class _BackgroundState extends State<Background>
     with SingleTickerProviderStateMixin {
-
   Map _colors;
   bool _searchlight;
   WeatherCondition _weatherCondition;

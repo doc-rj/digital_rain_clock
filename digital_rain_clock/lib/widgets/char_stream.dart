@@ -128,12 +128,6 @@ class _CharStreamState extends State<CharStream>
     }
   }
 
-  void _onModelChanged() {
-    // no setState() here, as the next stream will catch up
-    final model = Provider.of<ClockModel>(context, listen: false);
-    _speed = _conditionToSpeed(model.weatherCondition);
-  }
-
   Future<void> _onAnimationStatus(AnimationStatus status) async {
     if (status == AnimationStatus.completed) {
       _stream();

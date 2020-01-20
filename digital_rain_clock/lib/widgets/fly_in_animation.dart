@@ -47,8 +47,7 @@ class FlyInAnimation extends StatelessWidget {
   Widget _buildAnimation(BuildContext context, Widget child) {
     return Transform(
       transform: Matrix4.identity()
-        ..setRotationX(-1.5 * pi)
-        ..rotateX(rotation.value * 0.75 * pi)
+        ..rotateX(rotation.value * -2.25 * pi)
         ..scale(scale.value, scale.value),
       alignment: FractionalOffset.center,
       child: child,

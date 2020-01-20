@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'fly_in_animation.dart';
+import 'fade_out_animation.dart';
 
-class DynamicDigit extends StatefulWidget {
-  const DynamicDigit(
-    this.digit, {
+class EntryExit extends StatefulWidget {
+  const EntryExit({
     Key key,
+    @required this.child,
+    @required this.isEntry,
     this.duration = const Duration(milliseconds: 500),
-  })  : assert(digit != null),
+  })  : assert(child != null),
+        assert(isEntry != null),
         assert(duration != null),
         super(key: key);
 
-  final int digit;
+  final Widget child;
+  final bool isEntry;
   final Duration duration;
 
   @override
-  _DynamicDigitState createState() => _DynamicDigitState();
+  _EntryExitState createState() => _EntryExitState();
 }
 
-class _DynamicDigitState extends State<DynamicDigit>
-    with TickerProviderStateMixin {
+class _EntryExitState extends State<EntryExit> with TickerProviderStateMixin {
   AnimationController _animationController;
 
   @override
@@ -31,9 +34,9 @@ class _DynamicDigitState extends State<DynamicDigit>
   }
 
   @override
-  void didUpdateWidget(DynamicDigit oldWidget) {
+  void didUpdateWidget(EntryExit oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.digit != widget.digit) {
+    if (oldWidget.child != widget.child) {
       _animationController.duration = widget.duration;
       _animationController.forward();
     }
@@ -47,9 +50,16 @@ class _DynamicDigitState extends State<DynamicDigit>
 
   @override
   Widget build(BuildContext context) {
-    return FlyInAnimation(
-      child: Text(widget.digit.toString()),
-      controller: _animationController,
-    );
+    if (widget.isEntry) {
+      return FlyInAnimation(
+        child: widget.child,
+        controller: _animationController,
+      );
+    } else {
+      return FadeOutAnimation(
+        child: widget.child,
+        controller: _animationController,
+      );
+    }
   }
 }
