@@ -135,6 +135,8 @@ class _CharStreamState extends State<CharStream>
   }
 
   Future<void> _stream() async {
+    bool hadStreamed = _streamed;
+    _streamed = true;
     // eager build before delay
     final fontSize =
         _nextRandom(CharStream.kMinSize, CharStream.kMaxSize).toDouble();
@@ -142,14 +144,11 @@ class _CharStreamState extends State<CharStream>
       ..._buildTrailChars(fontSize),
       ..._buildLeadChars(fontSize),
     ];
-    // one-time delay for dramatic effect, and to minimize loading jank
-    if (!_streamed) {
-      await Future.delayed(Duration(seconds: 5));
-    }
-    // random delay followed by stream
-    Future.delayed(Duration(seconds: _nextRandom(1, 8)), () {
+    // one-time delay for dramatic effect and to minimize initial loading jank
+    final extraDelay = hadStreamed ? 0 : 5;
+    // random delay followed by animation
+    Future.delayed(Duration(seconds: _nextRandom(1, 8) + extraDelay), () {
       if (mounted) {
-        _streamed = true;
         _alignment = Alignment(_nextRandom(-1, 1).toDouble(), 0.0);
         _animationController.duration = Duration(seconds: _duration(fontSize));
         _animationController.forward(from: -1.0);
