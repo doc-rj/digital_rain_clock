@@ -1,15 +1,21 @@
-# Flutter Clock
+# Digital Rain Clock
 
-Welcome to Flutter Clock!
+This clock face app was designed for the [Flutter Clock challenge](https://flutter.dev/clock).
 
-See [flutter.dev/clock](https://flutter.dev/clock) for how to get started, submission requirements, contest rules, and FAQs.
+The app runs on both Android and iOS, though most of the testing and tweaking was done on Android devices.
 
-See a [live demo](https://maryx.github.io/flutter_clock) with Flutter for Web!
+Note that the app has not been tested on smart clock hardware or with Android Things OS, which may impose stricter performance constraints. Refer to [digital\_rain\_clock/lib/widgets/digital_rain.dart](./digital_rain_clock/lib/widgets/digital_rain.dart) for one of the key constants that may be tweaked for performance.
 
-Example [Analog Clock](analog_clock)
+### Dark
 
-<img src='analog_clock/analog.gif' width='350'>
+<img src='./digital_rain_clock/dark.png' width='350'>
 
-Example [Digital Clock](digital_clock)
+### Light
 
-<img src='digital_clock/digital.gif' width='350'>
+<img src='./digital_rain_clock/light_sunny.png' width='350'>
+
+<img src='./digital_rain_clock/light_rainy.png' width='350'>
+
+## License
+
+See the [LICENSE.md](./LICENSE.md) file for license rights and limitations.
