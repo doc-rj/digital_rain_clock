@@ -1,6 +1,6 @@
 # Digital Rain Clock
 
-This clock face app was designed for the [Flutter Clock challenge](https://flutter.dev/clock). <img style="float: right;" src='./flutter_clock_badge.png' width='130'>
+This clock face app was designed for the [Flutter Clock challenge](https://flutter.dev/clock). <img align='right' src='./flutter_clock_badge.png' width='130'>
 
 The app runs on both Android and iOS, though most of the testing and tweaking was done on Android devices.
 
