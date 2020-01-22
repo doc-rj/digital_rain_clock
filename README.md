@@ -10,13 +10,13 @@ Refer to [digital\_rain\_clock/lib/widgets/digital_rain.dart](./digital_rain_clo
 
 ### Dark
 
-<img src='./dark.png' width='350'>
+<img src='./dark.png' width='500'>
 
 ### Light
 
-<img src='./light_sunny.png' width='350'>
+<img src='./light_sunny.png' width='500'>
 
-<img src='./light_rainy.png' width='350'>
+<img src='./light_rainy.png' width='500'>
 
 ## License
 
